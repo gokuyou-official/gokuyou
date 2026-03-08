@@ -530,15 +530,15 @@
     .pc-sidebar {
       display: flex;
       flex-direction: column;
-      width: 260px;
-      min-width: 260px;
+      width: 300px;
+      min-width: 300px;
       background: var(--white);
       border-right: 1px solid var(--border);
       min-height: 100vh;
       position: sticky;
       top: 0;
-      padding: 48px 28px;
-      gap: 40px;
+      padding: 56px 32px;
+      gap: 48px;
     }
 
     .sidebar-logo {
@@ -595,10 +595,17 @@
 
     .bottom-nav { display: none; }
 
-    .featured { padding: 24px 24px 0; }
-    .filter-wrap { padding: 20px 24px 0; }
-    .section { padding: 24px 24px; }
-    .cta { margin: 0 24px 32px; }
+    .page-header { padding: 64px 48px 56px; }
+    .featured { padding: 32px 48px 0; }
+    .filter-wrap { padding: 28px 48px 0; }
+    .section { padding: 32px 48px; }
+    .cta { margin: 0 48px 40px; padding: 36px 40px; }
+
+    .cta-btn {
+      display: inline-block;
+      width: auto;
+      max-width: 400px;
+    }
   }
 </style>
 </head>
