@@ -598,9 +598,111 @@
   .nav-icon { font-size: 20px; line-height: 1; }
   .nav-label { font-size: 9px; letter-spacing: 0.03em; color: var(--text3); font-weight: 600; }
   .nav-item.active .nav-label { color: var(--primary); }
+
+  /* ========== PC LAYOUT ========== */
+  .pc-sidebar { display: none; }
+  .main-content { width: 100%; }
+
+  @media (min-width: 769px) {
+    body {
+      max-width: 100%;
+      display: flex;
+      align-items: flex-start;
+      padding-bottom: 0;
+    }
+
+    .pc-sidebar {
+      display: flex;
+      flex-direction: column;
+      width: 260px;
+      min-width: 260px;
+      background: var(--white);
+      border-right: 1px solid var(--border);
+      min-height: 100vh;
+      position: sticky;
+      top: 0;
+      padding: 48px 28px;
+      gap: 40px;
+    }
+
+    .sidebar-logo {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .sidebar-logo-sub {
+      font-size: 11px;
+      color: var(--text3);
+      margin-top: 6px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text2);
+      text-decoration: none;
+    }
+
+    .sidebar-link:hover { background: var(--bg); }
+    .sidebar-link.active { background: var(--primary-bg); color: var(--primary); }
+
+    .sidebar-link-cta {
+      margin-top: 12px;
+      background: var(--primary);
+      color: #fff;
+      justify-content: center;
+      padding: 13px 14px;
+      border-radius: 10px;
+    }
+
+    .sidebar-link-cta:hover { background: var(--primary-light); }
+
+    .main-content {
+      flex: 1;
+      max-width: 560px;
+      min-width: 0;
+    }
+
+    .bottom-nav { display: none; }
+
+    .kingen-scroll {
+      margin: 0;
+      padding: 4px 0 8px;
+    }
+  }
 </style>
 </head>
 <body>
+
+<!-- PC SIDEBAR -->
+<aside class="pc-sidebar">
+  <div class="sidebar-logo">
+    夢の軌跡を、<br>ここに。
+    <div class="sidebar-logo-sub">DREAM ARCHIVE</div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="/" class="sidebar-link active">🏠 ホーム</a>
+    <a href="/gokuyou_kingen" class="sidebar-link">📜 敗北者の金言</a>
+    <a href="https://docs.google.com/forms/d/1aVv1NRdbYKnbLiW2dkTLZzEBKwCO_7a4DnQOUguxZ2s/viewform" class="sidebar-link sidebar-link-cta">🌟 記録を始める</a>
+  </nav>
+</aside>
+
+<div class="main-content">
 
 <!-- HERO -->
 <section class="hero">
@@ -797,6 +899,8 @@
     <span class="nav-label">記録する</span>
   </a>
 </nav>
+
+</div><!-- /main-content -->
 
 </body>
 </html>
