@@ -2,13 +2,13 @@
 
 ## 基本情報
 - 運営者：カネ（匿名・会社バレNG）
-- GitHub：sk19880328/gokuyou
-- 公開URL：https://sk19880328.github.io/gokuyou/
+- GitHub：gokuyou-official/gokuyou
+- 公開URL：https://gokuyou-official.github.io/gokuyou/
 - Twitter：@gokuyou_bot
 - GA：G-8990S70XB8
 
 ## 完了済み（2026-03-08）
-- [x] GitHub リポジトリ作成（sk19880328/gokuyou）
+- [x] GitHub リポジトリ作成（gokuyou-official/gokuyou）
 - [x] GitHub Pages 自動デプロイ設定（pushで自動反映）
 - [x] OGP設定（両ページ）
 - [x] Google Analytics設置（G-8990S70XB8）
