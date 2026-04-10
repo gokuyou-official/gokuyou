@@ -890,7 +890,7 @@
     <div class="kingen-card" data-genre="entertainment" data-pinned="true">
       <div class="kingen-card-top">
         <div class="kingen-mark">"</div>
-        <span class="kingen-career-badge badge-entertainment">元芸人</span>
+        <span class="kingen-career-badge badge-entertainment">Entertainment｜芸能・お笑い</span>
       </div>
       <p class="kingen-context">コンビを組んで10年以上。相方との喧嘩が増え、月に一回しか出番がなくなったとき、自分でやめる判断をした話。</p>
       <p class="kingen-quote-text">続けるのも大事だけど、やめる判断をするのもちゃんと必要だと思います。</p>
@@ -1278,7 +1278,7 @@
 
 <script type="application/json" id="article-geinin-01">
 {
-  "badge": "元芸人",
+  "badge": "Entertainment｜芸能・お笑い",
   "kingen": "続けるのも大事だけど、やめる判断をするのもちゃんと必要だと思います。",
   "author": "匿名（34歳）",
   "now": "現在 営業職",
@@ -1411,7 +1411,7 @@ function shareLine(quote) {
       }
 
       cards.forEach(function(card) {
-        if (isAll || card.getAttribute('data-pinned') === 'true') {
+        if (isAll) {
           card.style.display = '';
           return;
         }
