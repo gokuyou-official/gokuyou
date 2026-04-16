@@ -129,27 +129,6 @@
     position: relative;
     z-index: 1;
   }
-  .hero-register-note {
-    font-size: 11px;
-    color: rgba(255,255,255,0.65);
-    margin: 0;
-    line-height: 1.6;
-  }
-
-  .btn-primary {
-    display: block;
-    width: 100%;
-    padding: 15px;
-    background: #fff;
-    color: var(--primary);
-    text-align: center;
-    font-size: 15px;
-    font-weight: 700;
-    border-radius: 10px;
-    text-decoration: none;
-    letter-spacing: 0.05em;
-  }
-
   .btn-outline {
     display: block;
     width: 100%;
@@ -481,42 +460,6 @@
     background: var(--bg);
   }
 
-  /* ========== CTA ========== */
-  .cta {
-    padding: 32px 20px;
-    text-align: center;
-  }
-
-  .cta-title {
-    font-size: 18px;
-    font-weight: 800;
-    color: var(--text);
-    margin-bottom: 8px;
-    line-height: 1.6;
-  }
-
-  .cta-sub {
-    font-size: 12px;
-    color: var(--text3);
-    margin-bottom: 22px;
-    line-height: 1.8;
-  }
-
-  .btn-cta {
-    display: block;
-    width: 100%;
-    padding: 16px;
-    background: var(--primary);
-    color: #fff;
-    text-align: center;
-    font-size: 15px;
-    font-weight: 700;
-    border-radius: 12px;
-    text-decoration: none;
-    letter-spacing: 0.05em;
-    box-shadow: 0 6px 20px rgba(255,107,53,0.35);
-  }
-
   /* ========== LATEST ARTICLE ========== */
   .article-card {
     display: flex;
@@ -586,7 +529,7 @@
     backdrop-filter: blur(12px);
     border-top: 1px solid var(--border);
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     padding: 8px 0 18px;
     z-index: 100;
     box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
@@ -627,90 +570,6 @@
   }
   .share-tw { background: #000; color: #fff; }
   .share-line { background: #06C755; color: #fff; }
-
-  /* ========== 今日の一歩 ========== */
-  .step-card {
-    background: var(--white);
-    border-radius: 14px;
-    padding: 20px;
-    border: 1.5px solid var(--border);
-    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-  }
-
-  .step-streak {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-    margin-bottom: 14px;
-  }
-
-  .step-streak-num {
-    font-size: 30px;
-    font-weight: 800;
-    color: var(--primary);
-    line-height: 1;
-  }
-
-  .step-streak-label {
-    font-size: 12px;
-    color: var(--text2);
-  }
-
-  .step-textarea {
-    width: 100%;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-size: 14px;
-    font-family: inherit;
-    color: var(--text);
-    resize: none;
-    height: 76px;
-    outline: none;
-    background: var(--bg);
-    line-height: 1.7;
-    transition: border-color 0.2s;
-  }
-
-  .step-textarea:focus { border-color: var(--primary); background: var(--white); }
-
-  .step-save-btn {
-    margin-top: 10px;
-    width: 100%;
-    padding: 12px;
-    background: var(--primary);
-    color: #fff;
-    font-size: 14px;
-    font-weight: 700;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-family: inherit;
-    letter-spacing: 0.05em;
-    box-shadow: 0 4px 14px rgba(255,107,53,0.3);
-  }
-
-  .step-saved-msg {
-    text-align: center;
-    font-size: 13px;
-    color: var(--green);
-    font-weight: 600;
-    padding: 10px;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .step-saved-msg.show { opacity: 1; }
-
-  .step-log-link {
-    display: block;
-    text-align: center;
-    font-size: 12px;
-    color: var(--text3);
-    text-decoration: none;
-    margin-top: 8px;
-    padding: 4px;
-  }
 
   /* ========== PC LAYOUT ========== */
   .pc-sidebar { display: none; }
@@ -803,20 +662,12 @@
     .section { padding: 36px 48px; }
     .divider { height: 8px; }
     .concept { margin: 0 48px; padding: 36px 40px; }
-    .cta { padding: 40px 48px; }
-
-    .btn-primary, .btn-outline {
+    .btn-outline {
       display: inline-block;
       width: auto;
       max-width: 400px;
     }
     .hero-btns { align-items: flex-start; }
-
-    .btn-cta {
-      display: inline-block;
-      width: auto;
-      max-width: 400px;
-    }
   }
 
   /* ========== HOWTO ========== */
@@ -886,7 +737,6 @@
   <h1 class="hero-title">夢の軌跡を、<br>ここに残そう。</h1>
   <p class="hero-desc">挑戦した時間は、消えない。<br>諦めた日も含めて、あなたの本物の記録。</p>
   <div class="hero-btns">
-    <a href="./log" class="btn-primary">✏️ 今日の一歩を記録する</a>
     <a class='btn-outline' href='./gokuyou_kingen'>📖 先輩たちの言葉を読む</a>
   </div>
 </section>
@@ -908,29 +758,6 @@
   </div>
 </div>
 -->
-
-<!-- 今日の一歩 -->
-<section class="section" id="today-step">
-  <div class="section-header">
-    <span class="section-title">
-      <span class="section-title-icon">✏️</span>
-      今日の一歩
-    </span>
-    <a href="./log" class="section-link">軌跡を見る →</a>
-  </div>
-  <div class="step-card">
-    <div class="step-streak">
-      <span class="step-streak-num" id="streak-num">0</span>
-      <span class="step-streak-label">日連続中</span>
-    </div>
-    <textarea class="step-textarea" id="step-input" placeholder="今日、夢に向けて何をした？（一言でOK）"></textarea>
-    <button class="step-save-btn" onclick="saveStep()">記録する</button>
-    <div class="step-saved-msg" id="step-saved">今日の一歩を受け取りました</div>
-    <a href="./log" class="step-log-link">これまでの記録を見る →</a>
-  </div>
-</section>
-
-<div class="divider"></div>
 
 <!-- KINGEN -->
 <section class="section">
@@ -1062,13 +889,6 @@
   </div>
 </section>
 
-<!-- CTA -->
-<div class="cta">
-  <h3 class="cta-title">あなたの軌跡を<br>ここに残しませんか</h3>
-  <p class="cta-sub">挑戦中でも、立ち止まっていても。<br>すべての夢に、居場所がある。</p>
-  <a href="/gokuyou/log" class="btn-cta">✏️ 今日の一歩を記録する</a>
-</div>
-
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav">
   <a href="./" class="nav-item active">
@@ -1082,10 +902,6 @@
   <a href="./gokuyou_kingen" class="nav-item">
     <span class="nav-icon">📜</span>
     <span class="nav-label">金言</span>
-  </a>
-  <a href="https://docs.google.com/forms/d/1aVv1NRdbYKnbLiW2dkTLZzEBKwCO_7a4DnQOUguxZ2s/viewform" class="nav-item">
-    <span class="nav-icon">＋</span>
-    <span class="nav-label">記録する</span>
   </a>
 </nav>
 
@@ -1149,41 +965,7 @@ function renderCalendar() {
 function getLogs() {
   return JSON.parse(localStorage.getItem('gokuyou_logs') || '[]');
 }
-function saveLogs(logs) {
-  localStorage.setItem('gokuyou_logs', JSON.stringify(logs));
-}
-function getStreak() {
-  var logs = getLogs();
-  if (!logs.length) return 0;
-  var today = new Date().toISOString().slice(0, 10);
-  var streak = 0;
-  var cur = new Date(today);
-  while (true) {
-    var d = cur.toISOString().slice(0, 10);
-    if (logs.some(function(l) { return l.date === d; })) {
-      streak++;
-      cur.setDate(cur.getDate() - 1);
-    } else {
-      break;
-    }
-  }
-  return streak;
-}
-function saveStep() {
-  var text = document.getElementById('step-input').value.trim();
-  if (!text) return;
-  var logs = getLogs();
-  var today = new Date().toISOString().slice(0, 10);
-  logs.push({ date: today, text: text });
-  saveLogs(logs);
-  document.getElementById('step-input').value = '';
-  var msg = document.getElementById('step-saved');
-  msg.classList.add('show');
-  setTimeout(function() { msg.classList.remove('show'); }, 2000);
-  document.getElementById('streak-num').textContent = getStreak();
-}
 document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('streak-num').textContent = getStreak();
   renderCalendar();
 });
 </script>
