@@ -1232,6 +1232,8 @@ function shareLine(quote) {
 
   function createCard(item) {
     var genreKey = item.genre.toLowerCase();
+    // 表示テキストは item.kingen をそのまま使う（「」込み）
+    // シェア用のみ「」を除去（shareTwitter/shareLine が内部で「」を付加するため）
     var shareText = item.kingen.replace(/^「/, '').replace(/」$/, '');
     var el = document.createElement('div');
     el.className = 'kingen-card';
