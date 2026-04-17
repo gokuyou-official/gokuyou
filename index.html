@@ -143,6 +143,19 @@
     border: 1.5px solid rgba(255,255,255,0.6);
     letter-spacing: 0.05em;
   }
+  .btn-primary {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    background: #fff;
+    color: var(--primary);
+    text-align: center;
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: 10px;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+  }
 
   /* ========== STATS ========== */
   .stats {
@@ -460,6 +473,79 @@
     background: var(--bg);
   }
 
+  /* ========== 今日の一歩 ========== */
+  .step-card {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .step-streak {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: 14px;
+  }
+  .step-streak-num {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1;
+  }
+  .step-streak-label {
+    font-size: 12px;
+    color: var(--text3);
+  }
+  .step-textarea {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 13px;
+    color: var(--text);
+    font-family: inherit;
+    resize: none;
+    height: 80px;
+    margin-bottom: 10px;
+    background: var(--bg);
+  }
+  .step-textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+  .step-save-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.05em;
+  }
+  .step-saved-msg {
+    text-align: center;
+    font-size: 12px;
+    color: var(--green);
+    margin-top: 8px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .step-saved-msg.show { opacity: 1; }
+  .step-log-link {
+    display: block;
+    text-align: center;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
   /* ========== LATEST ARTICLE ========== */
   .article-card {
     display: flex;
@@ -662,7 +748,7 @@
     .section { padding: 36px 48px; }
     .divider { height: 8px; }
     .concept { margin: 0 48px; padding: 36px 40px; }
-    .btn-outline {
+    .btn-primary, .btn-outline {
       display: inline-block;
       width: auto;
       max-width: 400px;
@@ -737,6 +823,7 @@
   <h1 class="hero-title">夢の軌跡を、<br>ここに残そう。</h1>
   <p class="hero-desc">挑戦した時間は、消えない。<br>諦めた日も含めて、あなたの本物の記録。</p>
   <div class="hero-btns">
+    <a href="#today-step" class="btn-primary">✏️ 今日の一歩を記録する</a>
     <a class='btn-outline' href='./gokuyou_kingen'>📖 先輩たちの言葉を読む</a>
   </div>
 </section>
@@ -758,6 +845,29 @@
   </div>
 </div>
 -->
+
+<!-- 今日の一歩 -->
+<section class="section" id="today-step">
+  <div class="section-header">
+    <span class="section-title">
+      <span class="section-title-icon">✏️</span>
+      今日の一歩
+    </span>
+    <a href="./log" class="section-link">軌跡を見る →</a>
+  </div>
+  <div class="step-card">
+    <div class="step-streak">
+      <span class="step-streak-num" id="streak-num">0</span>
+      <span class="step-streak-label">日連続中</span>
+    </div>
+    <textarea class="step-textarea" id="step-input" placeholder="今日、夢に向けて何をした？（一言でOK）"></textarea>
+    <button class="step-save-btn" onclick="saveStep()">記録する</button>
+    <div class="step-saved-msg" id="step-saved">今日の一歩を受け取りました</div>
+    <a href="./log" class="step-log-link">これまでの記録を見る →</a>
+  </div>
+</section>
+
+<div class="divider"></div>
 
 <!-- KINGEN -->
 <section class="section">
@@ -965,7 +1075,41 @@ function renderCalendar() {
 function getLogs() {
   return JSON.parse(localStorage.getItem('gokuyou_logs') || '[]');
 }
+function saveLogs(logs) {
+  localStorage.setItem('gokuyou_logs', JSON.stringify(logs));
+}
+function getStreak() {
+  var logs = getLogs();
+  if (!logs.length) return 0;
+  var today = new Date().toISOString().slice(0, 10);
+  var streak = 0;
+  var cur = new Date(today);
+  while (true) {
+    var d = cur.toISOString().slice(0, 10);
+    if (logs.some(function(l) { return l.date === d; })) {
+      streak++;
+      cur.setDate(cur.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+function saveStep() {
+  var text = document.getElementById('step-input').value.trim();
+  if (!text) return;
+  var logs = getLogs();
+  var today = new Date().toISOString().slice(0, 10);
+  logs.push({ date: today, text: text });
+  saveLogs(logs);
+  document.getElementById('step-input').value = '';
+  var msg = document.getElementById('step-saved');
+  msg.classList.add('show');
+  setTimeout(function() { msg.classList.remove('show'); }, 2000);
+  document.getElementById('streak-num').textContent = getStreak();
+}
 document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('streak-num').textContent = getStreak();
   renderCalendar();
 });
 </script>
