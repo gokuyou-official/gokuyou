@@ -35,6 +35,10 @@ export function useAuth() {
           email: user.email ?? '',
           lastSeen: serverTimestamp(),
           createdAt: serverTimestamp(),
+          // 新規作成時のみ空値を入れる(既存値は merge で保持)
+          area: '',
+          bio: '',
+          interests: [],
         },
         { merge: true },
       );

@@ -1,4 +1,4 @@
-// 通知一覧を管理するフック
+// 通知一覧を管理するフック(v2: activity 情報を含める)
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   collection,
@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { sendPushNotification } from '../utils/pushNotifications';
+import { ActivityId } from '../config/activities';
 
 export type Notification = {
   id: string;
@@ -20,12 +21,17 @@ export type Notification = {
   senderName: string;
   receiverId: string;
   type: 'kibun' | 'reaction';
+  activity: ActivityId;
+  area?: string;
   createdAt: any;
   isRead: boolean;
   reactedBy: string | null;
 };
 
-export function useNotifications(currentUserId: string | undefined) {
+export function useNotifications(
+  currentUserId: string | undefined,
+  interests?: ActivityId[],
+) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -58,9 +64,17 @@ export function useNotifications(currentUserId: string | undefined) {
     return unsub;
   }, [currentUserId]);
 
+  // 自分の興味に合致するものだけ表示(リアクションは常に表示)
+  const filtered = useMemo(() => {
+    if (!interests || interests.length === 0) return notifications;
+    return notifications.filter(
+      (n) => n.type === 'reaction' || interests.includes(n.activity),
+    );
+  }, [notifications, interests]);
+
   const unreadCount = useMemo(
-    () => notifications.filter((n) => !n.isRead).length,
-    [notifications],
+    () => filtered.filter((n) => !n.isRead && !n.reactedBy).length,
+    [filtered],
   );
 
   const markAsRead = useCallback(async (notificationId: string) => {
@@ -80,6 +94,8 @@ export function useNotifications(currentUserId: string | undefined) {
       senderId: string,
       senderFcmToken: string | undefined,
       myName: string,
+      activity: ActivityId,
+      matchEmoji: string,
     ) => {
       if (!currentUserId) return;
       try {
@@ -93,6 +109,7 @@ export function useNotifications(currentUserId: string | undefined) {
           senderName: myName,
           receiverId: senderId,
           type: 'reaction',
+          activity,
           createdAt: serverTimestamp(),
           isRead: false,
           reactedBy: null,
@@ -101,7 +118,7 @@ export function useNotifications(currentUserId: string | undefined) {
           await sendPushNotification(
             [senderFcmToken],
             'KIBUNYA',
-            `${myName}さんが「かー」しました🍺`,
+            `${myName}さんが「かー」しました${matchEmoji}`,
           );
         }
       } catch (e) {
@@ -112,7 +129,7 @@ export function useNotifications(currentUserId: string | undefined) {
   );
 
   return {
-    notifications,
+    notifications: filtered,
     unreadCount,
     loading,
     markAsRead,

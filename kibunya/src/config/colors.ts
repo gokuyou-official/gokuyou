@@ -1,10 +1,27 @@
-// キブンヤのカラーパレット
+// キブンヤのカラーパレット(v2: 藍ベースのダーク基調)
 export const colors = {
-  narumi: '#FFF9EC',
+  // ベース(藍): メイン背景
+  ai: '#1A2E55',
+  // アクセント(山吹): ハイライト
   yamabuki: '#F5C518',
-  shu: '#E8391F',
-  ai: '#1B3A6B',
-  text: '#1A1A1A',
-  textMuted: 'rgba(26,26,26,0.45)',
-  textLight: 'rgba(26,26,26,0.3)',
+  // 差し色(朱): CTA
+  shu: '#D94829',
+  // 明るい色(テキスト・白系カード用)
+  cream: '#FFF9EC',
+
+  // テキスト
+  text: '#FFF9EC',
+  textMuted: 'rgba(255,249,236,0.55)',
+  textLight: 'rgba(255,249,236,0.35)',
+
+  // 半透明カード
+  cardBg: 'rgba(255,249,236,0.08)',
+  cardBorder: 'rgba(255,249,236,0.14)',
+
+  // 濃い藍(カード影や深層)
+  aiDeep: '#122041',
+
+  // 状態色
+  online: '#3BB273',
+  offline: 'rgba(255,249,236,0.25)',
 };
