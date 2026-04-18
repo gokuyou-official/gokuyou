@@ -1,4 +1,4 @@
-// 通知カード
+// 通知カード(v2: activity別絵文字 + 「済👌」状態)
 import React, { useState } from 'react';
 import {
   View,
@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { colors } from '../config/colors';
 import type { Notification } from '../hooks/useNotifications';
+import { getActivity } from '../config/activities';
 
 type Props = {
   notification: Notification;
@@ -31,7 +32,9 @@ function formatTime(ts: any): string {
 export default function NotificationCard({ notification, onReact }: Props) {
   const [busy, setBusy] = useState(false);
   const isReaction = notification.type === 'reaction';
-  const unread = !notification.isRead && !notification.reactedBy && !isReaction;
+  const activity = getActivity(notification.activity);
+  const reacted = !!notification.reactedBy;
+  const unread = !notification.isRead && !reacted && !isReaction;
 
   const handlePress = async () => {
     if (busy || !onReact) return;
@@ -43,21 +46,29 @@ export default function NotificationCard({ notification, onReact }: Props) {
     }
   };
 
-  const message = isReaction
-    ? `${notification.senderName}さんが「かー」しました🍺`
-    : `${notification.senderName}さんがちょい飲みの気分`;
+  // 表示メッセージ
+  let message: string;
+  if (isReaction) {
+    message = `${notification.senderName}さんが「かー」しました ${activity.matchEmoji}`;
+  } else if (reacted) {
+    message = `${notification.senderName}さんの${activity.label}の気分 — かーした`;
+  } else {
+    const areaPart = notification.area ? ` (${notification.area})` : '';
+    message = `${notification.senderName}さんが${activity.label}の気分${areaPart}`;
+  }
 
   return (
-    <View style={[styles.card, unread ? styles.cardUnread : styles.cardRead]}>
+    <View
+      style={[
+        styles.card,
+        unread ? styles.cardUnread : styles.cardRead,
+        reacted && styles.cardDone,
+      ]}
+    >
       {unread && <View style={styles.bar} />}
-      <View
-        style={[
-          styles.avatar,
-          { backgroundColor: isReaction ? colors.shu : colors.yamabuki },
-        ]}
-      >
-        <Text style={styles.avatarText}>
-          {notification.senderName?.slice(0, 1) ?? '?'}
+      <View style={styles.emojiWrap}>
+        <Text style={styles.emojiText}>
+          {isReaction || reacted ? activity.matchEmoji : activity.waitEmoji}
         </Text>
       </View>
       <View style={styles.body}>
@@ -65,23 +76,26 @@ export default function NotificationCard({ notification, onReact }: Props) {
         <Text style={styles.message}>{message}</Text>
         <Text style={styles.time}>{formatTime(notification.createdAt)}</Text>
       </View>
-      {unread && (
+      {unread ? (
         <Pressable
           onPress={handlePress}
-          disabled={busy || !!notification.reactedBy}
+          disabled={busy}
           style={({ pressed }) => [
             styles.reactBtn,
             pressed && { opacity: 0.7 },
-            !!notification.reactedBy && { opacity: 0.4 },
           ]}
         >
           {busy ? (
-            <ActivityIndicator color={colors.narumi} />
+            <ActivityIndicator color={colors.cream} />
           ) : (
             <Text style={styles.reactText}>かー🙋</Text>
           )}
         </Pressable>
-      )}
+      ) : reacted && !isReaction ? (
+        <View style={styles.doneBadge}>
+          <Text style={styles.doneText}>済👌</Text>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -98,14 +112,18 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   cardUnread: {
-    backgroundColor: 'rgba(245,197,24,0.08)',
+    backgroundColor: 'rgba(245,197,24,0.10)',
     borderWidth: 1,
-    borderColor: 'rgba(245,197,24,0.3)',
+    borderColor: 'rgba(245,197,24,0.35)',
   },
   cardRead: {
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.cardBg,
     borderWidth: 1,
-    borderColor: 'rgba(26,26,26,0.06)',
+    borderColor: colors.cardBorder,
+  },
+  cardDone: {
+    backgroundColor: 'rgba(59,178,115,0.08)',
+    borderColor: 'rgba(59,178,115,0.25)',
   },
   bar: {
     position: 'absolute',
@@ -115,16 +133,16 @@ const styles = StyleSheet.create({
     width: 3,
     backgroundColor: colors.yamabuki,
   },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  emojiWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(255,249,236,0.08)',
   },
-  avatarText: {
-    color: colors.narumi,
-    fontWeight: '600',
+  emojiText: {
+    fontSize: 22,
   },
   body: {
     flex: 1,
@@ -132,7 +150,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.text,
+    color: colors.cream,
   },
   message: {
     fontSize: 13,
@@ -151,8 +169,21 @@ const styles = StyleSheet.create({
     borderRadius: 14,
   },
   reactText: {
-    color: colors.narumi,
+    color: colors.cream,
     fontSize: 13,
     fontWeight: '600',
+  },
+  doneBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    backgroundColor: 'rgba(59,178,115,0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(59,178,115,0.4)',
+  },
+  doneText: {
+    color: '#3BB273',
+    fontSize: 13,
+    fontWeight: '700',
   },
 });

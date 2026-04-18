@@ -1,4 +1,4 @@
-// 通知一覧画面
+// 通知一覧画面(v2: 興味でフィルタ、activity/matchEmoji を reactToNotification に渡す)
 import React, { useCallback } from 'react';
 import {
   View,
@@ -11,33 +11,46 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { doc, getDoc } from 'firebase/firestore';
 import { colors } from '../config/colors';
 import { useAuth } from '../hooks/useAuth';
+import { useProfile } from '../hooks/useProfile';
 import { useNotifications } from '../hooks/useNotifications';
 import { db } from '../config/firebase';
 import NotificationCard from '../components/NotificationCard';
+import { getActivity } from '../config/activities';
 
 export default function NotificationsScreen() {
   const { currentUser } = useAuth();
+  const { profile } = useProfile(currentUser?.uid);
   const {
     notifications,
     unreadCount,
     loading,
     reactToNotification,
-  } = useNotifications(currentUser?.uid);
+  } = useNotifications(currentUser?.uid, profile.interests);
 
   const handleReact = useCallback(
-    async (notifId: string, senderId: string) => {
+    async (
+      notifId: string,
+      senderId: string,
+      activityId: string,
+    ) => {
       if (!currentUser) return;
       try {
-        const meSnap = await getDoc(doc(db, 'users', currentUser.uid));
-        const myName = meSnap.data()?.name ?? 'フレンド';
         const senderSnap = await getDoc(doc(db, 'users', senderId));
         const senderFcm = senderSnap.data()?.fcmToken;
-        await reactToNotification(notifId, senderId, senderFcm, myName);
+        const activity = getActivity(activityId);
+        await reactToNotification(
+          notifId,
+          senderId,
+          senderFcm,
+          profile.name || 'フレンド',
+          activity.id,
+          activity.matchEmoji,
+        );
       } catch (e) {
         console.error('handleReact error', e);
       }
     },
-    [currentUser, reactToNotification],
+    [currentUser, reactToNotification, profile.name],
   );
 
   return (
@@ -57,6 +70,9 @@ export default function NotificationsScreen() {
         <View style={styles.empty}>
           <Text style={styles.emptyEmoji}>🍻</Text>
           <Text style={styles.emptyText}>まだアラートはありません</Text>
+          <Text style={styles.emptySub}>
+            興味に合う友達の気分がここに届きます
+          </Text>
         </View>
       ) : (
         <FlatList
@@ -66,7 +82,7 @@ export default function NotificationsScreen() {
           renderItem={({ item }) => (
             <NotificationCard
               notification={item}
-              onReact={() => handleReact(item.id, item.senderId)}
+              onReact={() => handleReact(item.id, item.senderId, item.activity)}
             />
           )}
         />
@@ -78,7 +94,7 @@ export default function NotificationsScreen() {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: colors.narumi,
+    backgroundColor: colors.ai,
   },
   header: {
     flexDirection: 'row',
@@ -86,23 +102,25 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingTop: 10,
-    paddingBottom: 12,
+    paddingBottom: 14,
   },
   title: {
     fontSize: 22,
-    fontWeight: '600',
-    color: colors.text,
+    fontWeight: '700',
+    color: colors.cream,
   },
   badge: {
-    backgroundColor: 'rgba(232,57,31,0.12)',
+    backgroundColor: 'rgba(217,72,41,0.20)',
     paddingHorizontal: 12,
     paddingVertical: 5,
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(217,72,41,0.4)',
   },
   badgeText: {
     fontSize: 12,
     color: colors.shu,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   list: {
     paddingHorizontal: 16,
@@ -113,12 +131,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
+    padding: 32,
   },
   emptyEmoji: {
-    fontSize: 48,
+    fontSize: 56,
+    marginBottom: 4,
   },
   emptyText: {
-    fontSize: 13,
+    fontSize: 15,
+    color: colors.cream,
+    fontWeight: '500',
+  },
+  emptySub: {
+    fontSize: 12,
     color: colors.textMuted,
+    textAlign: 'center',
   },
 });
