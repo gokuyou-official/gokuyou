@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>御供養 | ログイン</title>
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8990S70XB8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-8990S70XB8');
+</script>
+
+<meta name="description" content="御供養にログインして、自分の夢の軌跡を記録しよう。">
+<meta property="og:title" content="御供養 | ログイン">
+<meta property="og:description" content="御供養にログインして、自分の夢の軌跡を記録しよう。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://gokuyou-official.github.io/gokuyou/pages/login.html">
+<meta property="og:site_name" content="夢の軌跡を、ここに。">
+<meta property="og:locale" content="ja_JP">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/gokuyou/js/config.js"></script>
+<script src="/gokuyou/js/supabase-client.js"></script>
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --primary: #FF6B35;
+    --primary-light: #FF8C5A;
+    --primary-bg: #FFF4EF;
+    --accent: #2D6BE4;
+    --green: #27AE60;
+    --green-bg: #EDFBF4;
+    --white: #FFFFFF;
+    --bg: #F7F8FA;
+    --card: #FFFFFF;
+    --charcoal: #3d3d3d;
+    --text: #3d3d3d;
+    --text2: #666677;
+    --text3: #9999AA;
+    --border: rgba(61,61,61,0.12);
+    --error: #D14343;
+    --error-bg: #FDECEC;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding: 24px 24px 48px;
+  }
+
+  .auth-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text3);
+    text-decoration: none;
+    margin-bottom: 28px;
+  }
+
+  .auth-back:hover { color: var(--primary); }
+
+  .auth-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--primary);
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+
+  .auth-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--charcoal);
+    line-height: 1.3;
+    margin-bottom: 12px;
+    letter-spacing: 0.02em;
+  }
+
+  .auth-desc {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.8;
+    margin-bottom: 28px;
+  }
+
+  .auth-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 28px 22px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+  }
+
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .auth-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text2);
+    letter-spacing: 0.05em;
+  }
+
+  .auth-input {
+    width: 100%;
+    padding: 14px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    font-size: 14px;
+    color: var(--text);
+    font-family: inherit;
+  }
+
+  .auth-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: var(--white);
+  }
+
+  .auth-btn {
+    width: 100%;
+    padding: 15px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+  }
+
+  .auth-btn:hover:not(:disabled) {
+    background: var(--primary-light);
+  }
+
+  .auth-btn:disabled {
+    background: var(--text3);
+    cursor: not-allowed;
+  }
+
+  .auth-success {
+    background: var(--green-bg);
+    color: var(--green);
+    padding: 16px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.7;
+    font-weight: 600;
+  }
+
+  .auth-error {
+    background: var(--error-bg);
+    color: var(--error);
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-top: 8px;
+  }
+
+  .auth-foot {
+    font-size: 11px;
+    color: var(--text3);
+    text-align: center;
+    margin-top: 20px;
+    line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+
+<a href="/gokuyou/" class="auth-back">← トップへ戻る</a>
+
+<p class="auth-eyebrow">SIGN IN</p>
+<h1 class="auth-title">はじめる</h1>
+<p class="auth-desc">メールアドレスを入力してください。<br>ログインリンクをお送りします。</p>
+
+<div class="auth-card">
+  <form id="login-form" class="auth-form">
+    <label class="auth-label" for="email-input">メールアドレス</label>
+    <input
+      class="auth-input"
+      type="email"
+      id="email-input"
+      name="email"
+      placeholder="example@example.com"
+      autocomplete="email"
+      required
+    >
+    <button type="submit" id="submit-btn" class="auth-btn">リンクを送る</button>
+    <div id="error-msg" class="auth-error" style="display:none;">エラーが発生しました。もう一度お試しください。</div>
+  </form>
+
+  <div id="success-msg" class="auth-success" style="display:none;">
+    メールを送りました。受信ボックスのリンクをタップしてください。
+  </div>
+</div>
+
+<p class="auth-foot">© 御供養 / DREAM ARCHIVE</p>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var form = document.getElementById('login-form');
+  var emailInput = document.getElementById('email-input');
+  var submitBtn = document.getElementById('submit-btn');
+  var errorMsg = document.getElementById('error-msg');
+  var successMsg = document.getElementById('success-msg');
+
+  if (!window.gAuth) {
+    errorMsg.textContent = '初期化に失敗しました。ページをリロードしてください。';
+    errorMsg.style.display = 'block';
+    submitBtn.disabled = true;
+    return;
+  }
+
+  window.gAuth.getSession().then(function (session) {
+    if (session) {
+      window.location.href = '/gokuyou/pages/profile.html';
+    }
+  }).catch(function (e) {
+    console.error(e);
+  });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    errorMsg.style.display = 'none';
+    var email = emailInput.value.trim();
+    if (!email) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '送信中…';
+
+    window.gAuth.signIn(email).then(function (result) {
+      if (result && result.error) {
+        console.error(result.error);
+        errorMsg.textContent = 'エラーが発生しました。もう一度お試しください。';
+        errorMsg.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'リンクを送る';
+      } else {
+        form.style.display = 'none';
+        successMsg.style.display = 'block';
+      }
+    }).catch(function (e) {
+      console.error(e);
+      errorMsg.textContent = 'エラーが発生しました。もう一度お試しください。';
+      errorMsg.style.display = 'block';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'リンクを送る';
+    });
+  });
+});
+</script>
+
+</body>
+</html>
