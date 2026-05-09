@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>御供養 | マイページ</title>
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8990S70XB8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-8990S70XB8');
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/gokuyou/js/config.js"></script>
+<script src="/gokuyou/js/supabase-client.js"></script>
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --primary: #FF6B35;
+    --primary-light: #FF8C5A;
+    --primary-bg: #FFF4EF;
+    --accent: #2D6BE4;
+    --green: #27AE60;
+    --green-bg: #EDFBF4;
+    --white: #FFFFFF;
+    --bg: #F7F8FA;
+    --card: #FFFFFF;
+    --charcoal: #3d3d3d;
+    --text: #3d3d3d;
+    --text2: #666677;
+    --text3: #9999AA;
+    --border: rgba(61,61,61,0.12);
+    --error: #D14343;
+    --error-bg: #FDECEC;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding: 24px 24px 48px;
+  }
+
+  .profile-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text3);
+    text-decoration: none;
+    margin-bottom: 20px;
+  }
+
+  .profile-back:hover { color: var(--primary); }
+
+  .profile-nav {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .profile-nav a {
+    font-size: 12px;
+    color: var(--text3);
+    text-decoration: none;
+  }
+
+  .profile-nav a:hover { color: var(--primary); }
+
+  .profile-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--primary);
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+
+  .profile-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--charcoal);
+    line-height: 1.3;
+    margin-bottom: 20px;
+    letter-spacing: 0.02em;
+  }
+
+  .profile-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 24px 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    margin-bottom: 16px;
+  }
+
+  .profile-field {
+    margin-bottom: 16px;
+  }
+
+  .profile-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text3);
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+
+  .profile-value {
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 24px;
+  }
+
+  .profile-value.empty {
+    color: var(--text3);
+    font-style: italic;
+  }
+
+  .profile-input,
+  .profile-select,
+  .profile-textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    font-size: 14px;
+    color: var(--text);
+    font-family: inherit;
+  }
+
+  .profile-input:focus,
+  .profile-select:focus,
+  .profile-textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: var(--white);
+  }
+
+  .profile-textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .profile-btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .profile-btn {
+    flex: 1;
+    padding: 13px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.03em;
+  }
+
+  .profile-btn-primary {
+    background: var(--primary);
+    color: #fff;
+  }
+
+  .profile-btn-primary:hover:not(:disabled) {
+    background: var(--primary-light);
+  }
+
+  .profile-btn-primary:disabled {
+    background: var(--text3);
+    cursor: not-allowed;
+  }
+
+  .profile-btn-secondary {
+    background: var(--bg);
+    color: var(--text2);
+    border: 1.5px solid var(--border);
+  }
+
+  .profile-btn-secondary:hover {
+    background: var(--border);
+  }
+
+  .profile-btn-edit {
+    width: 100%;
+    padding: 13px;
+    background: var(--bg);
+    color: var(--text2);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.03em;
+    margin-top: 4px;
+  }
+
+  .profile-btn-edit:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  .profile-success {
+    background: var(--green-bg);
+    color: var(--green);
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 12px;
+  }
+
+  .profile-error {
+    background: var(--error-bg);
+    color: var(--error);
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-top: 12px;
+  }
+
+  .profile-logout-btn {
+    width: 100%;
+    padding: 13px;
+    background: transparent;
+    color: var(--text3);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 8px;
+  }
+
+  .profile-logout-btn:hover {
+    color: var(--error);
+    border-color: var(--error);
+  }
+
+  .profile-loading {
+    text-align: center;
+    padding: 40px 0;
+    color: var(--text3);
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+
+<a href="/gokuyou/" class="profile-back">← トップへ戻る</a>
+
+<nav class="profile-nav">
+  <a href="/gokuyou/">🏠 ホーム</a>
+  <a href="/gokuyou/gokuyou_kingen">📜 敗北者の金言</a>
+  <a href="/gokuyou/log">📖 私の軌跡</a>
+  <a href="/gokuyou/pages/calendar.html">📅 カレンダー</a>
+</nav>
+
+<p class="profile-eyebrow">MY PAGE</p>
+<h1 class="profile-title">マイページ</h1>
+
+<div id="profile-loading" class="profile-loading">読み込み中...</div>
+
+<!-- VIEW MODE -->
+<div id="view-mode" style="display:none;">
+  <div class="profile-card">
+    <div class="profile-field">
+      <p class="profile-label">ニックネーム</p>
+      <p class="profile-value" id="view-nickname"></p>
+    </div>
+    <div class="profile-field">
+      <p class="profile-label">夢のジャンル</p>
+      <p class="profile-value" id="view-genre"></p>
+    </div>
+    <div class="profile-field">
+      <p class="profile-label">ステータス</p>
+      <p class="profile-value" id="view-status"></p>
+    </div>
+    <div class="profile-field" style="margin-bottom:0;">
+      <p class="profile-label">ひとこと</p>
+      <p class="profile-value" id="view-bio"></p>
+    </div>
+  </div>
+  <button class="profile-btn-edit" id="edit-btn">編集する</button>
+  <button class="profile-logout-btn" id="logout-btn">ログアウト</button>
+</div>
+
+<!-- EDIT MODE -->
+<div id="edit-mode" style="display:none;">
+  <div class="profile-card">
+    <div class="profile-field">
+      <p class="profile-label">ニックネーム</p>
+      <input class="profile-input" type="text" id="edit-nickname" placeholder="例: たろう" maxlength="30">
+    </div>
+    <div class="profile-field">
+      <p class="profile-label">夢のジャンル</p>
+      <select class="profile-select" id="edit-genre">
+        <option value="">選択してください</option>
+        <option value="Entertainment">Entertainment｜芸能・お笑い</option>
+        <option value="Creative">Creative｜音楽・アート・動画</option>
+        <option value="Sports">Sports｜アスリート</option>
+        <option value="Study">Study｜勉強・学習</option>
+        <option value="Business">Business｜起業・経営</option>
+        <option value="Others">Others｜その他</option>
+      </select>
+    </div>
+    <div class="profile-field">
+      <p class="profile-label">ステータス</p>
+      <select class="profile-select" id="edit-status">
+        <option value="">選択してください</option>
+        <option value="挑戦中">挑戦中</option>
+        <option value="諦めた">諦めた</option>
+        <option value="探し中">探し中</option>
+      </select>
+    </div>
+    <div class="profile-field" style="margin-bottom:0;">
+      <p class="profile-label">ひとこと</p>
+      <textarea class="profile-textarea" id="edit-bio" placeholder="一言でOK" maxlength="200"></textarea>
+    </div>
+  </div>
+  <div class="profile-btn-row">
+    <button class="profile-btn profile-btn-secondary" id="cancel-btn">キャンセル</button>
+    <button class="profile-btn profile-btn-primary" id="save-btn">保存する</button>
+  </div>
+  <div id="save-success" class="profile-success" style="display:none;">保存しました</div>
+  <div id="save-error" class="profile-error" style="display:none;">保存に失敗しました。もう一度お試しください。</div>
+</div>
+
+<script>
+var currentSession = null;
+var isFirstLogin = false;
+
+document.addEventListener('DOMContentLoaded', function () {
+  if (!window.gAuth || !window.supabaseClient) {
+    document.getElementById('profile-loading').textContent = '初期化に失敗しました。ページをリロードしてください。';
+    return;
+  }
+
+  window.gAuth.getSession().then(function (session) {
+    if (!session) {
+      window.location.href = '/gokuyou/pages/login.html';
+      return;
+    }
+    currentSession = session;
+    loadProfile(session.user.id);
+  }).catch(function (e) {
+    console.error(e);
+    window.location.href = '/gokuyou/pages/login.html';
+  });
+
+  document.getElementById('edit-btn').addEventListener('click', showEditMode);
+  document.getElementById('cancel-btn').addEventListener('click', showViewMode);
+  document.getElementById('save-btn').addEventListener('click', saveProfile);
+  document.getElementById('logout-btn').addEventListener('click', function () {
+    window.gAuth.signOut();
+  });
+});
+
+function loadProfile(userId) {
+  window.supabaseClient
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .maybeSingle()
+    .then(function (result) {
+      document.getElementById('profile-loading').style.display = 'none';
+      if (result.error) {
+        console.error(result.error);
+        document.getElementById('profile-loading').textContent = 'データの読み込みに失敗しました。';
+        document.getElementById('profile-loading').style.display = '';
+        return;
+      }
+      var profile = result.data;
+      if (!profile) {
+        isFirstLogin = true;
+        showEditMode();
+      } else {
+        renderViewMode(profile);
+        showViewMode();
+      }
+    })
+    .catch(function (e) {
+      console.error(e);
+      document.getElementById('profile-loading').textContent = 'データの読み込みに失敗しました。';
+      document.getElementById('profile-loading').style.display = '';
+    });
+}
+
+function renderViewMode(profile) {
+  var set = function (id, val, placeholder) {
+    var el = document.getElementById(id);
+    if (val) {
+      el.textContent = val;
+      el.classList.remove('empty');
+    } else {
+      el.textContent = placeholder || '未設定';
+      el.classList.add('empty');
+    }
+  };
+  set('view-nickname', profile.nickname, '未設定');
+  set('view-genre', profile.dream_genre, '未設定');
+  set('view-status', profile.dream_status, '未設定');
+  set('view-bio', profile.bio, '未設定');
+
+  document.getElementById('edit-nickname').value = profile.nickname || '';
+  document.getElementById('edit-genre').value = profile.dream_genre || '';
+  document.getElementById('edit-status').value = profile.dream_status || '';
+  document.getElementById('edit-bio').value = profile.bio || '';
+}
+
+function showViewMode() {
+  document.getElementById('view-mode').style.display = '';
+  document.getElementById('edit-mode').style.display = 'none';
+}
+
+function showEditMode() {
+  document.getElementById('view-mode').style.display = 'none';
+  document.getElementById('edit-mode').style.display = '';
+  document.getElementById('save-success').style.display = 'none';
+  document.getElementById('save-error').style.display = 'none';
+}
+
+function saveProfile() {
+  if (!currentSession) return;
+  var saveBtn = document.getElementById('save-btn');
+  var successEl = document.getElementById('save-success');
+  var errorEl = document.getElementById('save-error');
+
+  saveBtn.disabled = true;
+  saveBtn.textContent = '保存中…';
+  successEl.style.display = 'none';
+  errorEl.style.display = 'none';
+
+  var payload = {
+    id: currentSession.user.id,
+    nickname: document.getElementById('edit-nickname').value.trim() || null,
+    dream_genre: document.getElementById('edit-genre').value || null,
+    dream_status: document.getElementById('edit-status').value || null,
+    bio: document.getElementById('edit-bio').value.trim() || null
+  };
+
+  window.supabaseClient
+    .from('profiles')
+    .upsert(payload, { onConflict: 'id' })
+    .then(function (result) {
+      saveBtn.disabled = false;
+      saveBtn.textContent = '保存する';
+      if (result.error) {
+        console.error(result.error);
+        errorEl.style.display = '';
+        return;
+      }
+      successEl.style.display = '';
+      setTimeout(function () { successEl.style.display = 'none'; }, 2000);
+      renderViewMode(payload);
+      isFirstLogin = false;
+      setTimeout(function () { showViewMode(); }, 2000);
+    })
+    .catch(function (e) {
+      console.error(e);
+      saveBtn.disabled = false;
+      saveBtn.textContent = '保存する';
+      errorEl.style.display = '';
+    });
+}
+</script>
+
+</body>
+</html>
