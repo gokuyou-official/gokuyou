@@ -53,8 +53,37 @@
     max-width: 430px;
     margin: 0 auto;
     min-height: 100vh;
-    padding: 24px 24px 56px;
+    padding: 24px 24px 84px;
   }
+
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 8px 0 18px;
+    z-index: 100;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px;
+    text-decoration: none;
+  }
+
+  .nav-icon { font-size: 20px; line-height: 1; }
+  .nav-label { font-size: 9px; letter-spacing: 0.03em; color: var(--text3); font-weight: 600; }
 
   .profile-back {
     display: inline-flex;
@@ -262,7 +291,7 @@
 <nav class="profile-nav">
   <a href="/gokuyou/">🏠 ホーム</a>
   <a href="/gokuyou/gokuyou_kingen">📜 敗北者の金言</a>
-  <a href="/gokuyou/log">📖 私の軌跡</a>
+  <a href="/gokuyou/log">📖 軌跡</a>
   <a href="/gokuyou/pages/calendar.html">📅 カレンダー</a>
 </nav>
 
@@ -529,6 +558,25 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 </script>
+
+<nav class="bottom-nav">
+  <a href="/gokuyou/" class="nav-item">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label">ホーム</span>
+  </a>
+  <a href="/gokuyou/log" class="nav-item">
+    <span class="nav-icon">📖</span>
+    <span class="nav-label">軌跡</span>
+  </a>
+  <a href="/gokuyou/gokuyou_kingen" class="nav-item">
+    <span class="nav-icon">📜</span>
+    <span class="nav-label">金言</span>
+  </a>
+  <a href="/gokuyou/pages/calendar.html" class="nav-item">
+    <span class="nav-icon">📅</span>
+    <span class="nav-label">カレンダー</span>
+  </a>
+</nav>
 
 </body>
 </html>
