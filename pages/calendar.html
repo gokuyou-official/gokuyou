@@ -719,9 +719,9 @@ function renderRegisterArea() {
   var area = document.getElementById('register-area');
   if (!currentSession) {
     area.innerHTML =
-      '<div class="cal-auth-notice">' +
-        'イベントを登録するには<a href="/gokuyou/pages/login.html">ログイン</a>が必要です。' +
-      '</div>';
+      '<p style="font-size:12px;color:var(--text3);text-align:right;margin-bottom:12px;">' +
+        '<a href="/gokuyou/pages/login.html" style="color:var(--primary);font-weight:600;">ログイン</a>するとイベントを登録できます' +
+      '</p>';
     return;
   }
 
