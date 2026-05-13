@@ -161,16 +161,27 @@
     letter-spacing: 0.05em;
   }
   .hero-auth-link {
-    display: inline-block;
-    font-size: 12px;
-    color: rgba(255,255,255,0.75);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
     text-decoration: none;
-    margin-top: 14px;
-    letter-spacing: 0.05em;
+    margin-top: 16px;
+    letter-spacing: 0.04em;
     position: relative;
     z-index: 1;
+    padding: 9px 18px;
+    border-radius: 8px;
+    border: 1.5px solid rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(4px);
   }
-  .hero-auth-link:hover { color: #fff; }
+  .hero-auth-link:hover {
+    background: rgba(255,255,255,0.22);
+    border-color: #fff;
+  }
 
   /* ========== STATS ========== */
   .stats {
@@ -1003,6 +1014,10 @@
     </div>
     <div class="howto-step">
       <span class="howto-number">03</span>
+      <p class="howto-text">自分の挑戦をシェアする、まだ見ぬ誰かに見つけてもらう<br><span class="howto-sub">イベントカレンダーで予定を公開、応援してもらおう</span></p>
+    </div>
+    <div class="howto-step">
+      <span class="howto-number">04</span>
       <p class="howto-text">仲間の一歩を見て、応援する<br><span class="howto-sub">追いかけてる人も、諦めた人も、ここにいる</span></p>
     </div>
   </div>
