@@ -635,7 +635,7 @@
     backdrop-filter: blur(12px);
     border-top: 1px solid var(--border);
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     padding: 8px 0 18px;
     z-index: 100;
     box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
@@ -839,7 +839,7 @@
   <nav class="sidebar-nav">
     <a href="./" class="sidebar-link active">🏠 ホーム</a>
     <a href="./gokuyou_kingen" class="sidebar-link">📜 敗北者の金言</a>
-    <a href="./log" class="sidebar-link">📖 私の軌跡</a>
+    <a href="./log" class="sidebar-link">📖 軌跡</a>
     <a href="/gokuyou/pages/calendar.html" class="sidebar-link">📅 カレンダー</a>
     <a id="nav-auth-link" href="/gokuyou/pages/login.html" class="sidebar-link">ログイン</a>
   </nav>
@@ -855,7 +855,7 @@
   <p class="hero-desc">挑戦した時間は、消えない。<br>諦めた日も含めて、あなたの本物の記録。</p>
   <div class="hero-btns">
     <a href="#today-step" class="btn-primary">✏️ 今日の一歩を記録する</a>
-    <a class='btn-outline' href='./gokuyou_kingen'>📖 先輩たちの言葉を読む</a>
+    <a class='btn-outline' href='./gokuyou_kingen'>📖 敗北者の金言を読む</a>
   </div>
 </section>
 
@@ -901,12 +901,28 @@
 
 <div class="divider"></div>
 
+<!-- EVENT CALENDAR PREVIEW -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-title">
+      <span class="section-title-icon">📅</span>
+      イベントシェアカレンダー
+    </span>
+    <a href="/gokuyou/pages/calendar.html" class="section-link">すべて見る →</a>
+  </div>
+  <div id="index-cal-preview">
+    <div style="text-align:center;padding:24px 0;color:var(--text3);font-size:13px;">読み込み中...</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
 <!-- KINGEN -->
 <section class="section">
   <div class="section-header">
     <span class="section-title">
       <span class="section-title-icon">📜</span>
-      先輩たちの言葉
+      敗北者の金言
     </span>
     <a class='section-link' href='./gokuyou_kingen'>すべて見る →</a>
   </div>
@@ -952,57 +968,6 @@
       </div>
     </div>
   </div>
-</section>
-
-<div class="divider"></div>
-
-<!-- CALENDAR -->
-<section class="section">
-  <div class="section-header">
-    <span class="section-title">
-      <span class="section-title-icon">📅</span>
-      私の活動カレンダー
-    </span>
-    <a href="./log" class="section-link">軌跡を見る →</a>
-  </div>
-  <div class="cal-wrap">
-    <p class="cal-month" id="cal-month"></p>
-    <div class="cal-grid" id="cal-grid">
-      <div class="cal-day-label">日</div>
-      <div class="cal-day-label">月</div>
-      <div class="cal-day-label">火</div>
-      <div class="cal-day-label">水</div>
-      <div class="cal-day-label">木</div>
-      <div class="cal-day-label">金</div>
-      <div class="cal-day-label">土</div>
-    </div>
-    <div class="cal-legend">
-      <div class="legend-item"><div class="legend-dot dot-event"></div>記録あり</div>
-      <div class="legend-item"><div class="legend-dot dot-today"></div>今日</div>
-      <div class="legend-item"><div class="legend-dot dot-mile"></div>供養した日</div>
-    </div>
-  </div>
-</section>
-
-<div class="divider"></div>
-
-<!-- LATEST ARTICLE -->
-<section class="section">
-  <div class="section-header">
-    <span class="section-title">
-      <span class="section-title-icon">📰</span>
-      最新記事
-    </span>
-  </div>
-  <a href="https://gokuyou-official.github.io/gokuyou/gokuyou_kingen" class="article-card">
-    <div class="article-icon">📜</div>
-    <div class="article-info">
-      <p class="article-label">WORDS OF THE DEFEATED</p>
-      <p class="article-title">敗北者の金言</p>
-      <p class="article-desc">夢を諦めた人だけが語れる、本物の言葉がある。</p>
-    </div>
-    <span class="article-arrow">›</span>
-  </a>
 </section>
 
 <!-- CONCEPT -->
@@ -1059,6 +1024,10 @@
 </div><!-- /main-content -->
 
 <script>
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function shareTwitter(quote) {
   var text = encodeURIComponent('「' + quote + '」 #御供養');
   var url = encodeURIComponent('https://gokuyou-official.github.io/gokuyou/gokuyou_kingen');
@@ -1067,6 +1036,47 @@ function shareTwitter(quote) {
 function shareLine(quote) {
   var text = encodeURIComponent('「' + quote + '」\n./gokuyou_kingen');
   window.open('https://line.me/R/msg/text/?' + text, '_blank', 'noopener');
+}
+
+// ===== イベントシェアカレンダー プレビュー =====
+function loadCalPreview() {
+  var el = document.getElementById('index-cal-preview');
+  if (!el) return;
+  if (!window.supabaseClient) {
+    el.innerHTML = '<div style="background:var(--white);border-radius:14px;padding:18px;border:1px solid var(--border);text-align:center;color:var(--text3);font-size:13px;line-height:1.8;"><a href="/gokuyou/pages/calendar.html" style="color:var(--primary);font-weight:700;">カレンダーを見る →</a></div>';
+    return;
+  }
+  var today = new Date().toISOString().slice(0, 10);
+  window.supabaseClient
+    .from('events')
+    .select('id, title, event_date, genre, profiles(nickname)')
+    .gte('event_date', today)
+    .order('event_date', { ascending: true })
+    .limit(3)
+    .then(function(result) {
+      var events = (result && result.data) ? result.data : [];
+      if (!events.length) {
+        el.innerHTML = '<div style="background:var(--white);border-radius:14px;padding:20px;border:1px solid var(--border);text-align:center;color:var(--text3);font-size:13px;line-height:2.0;">まだイベントはありません。<br><a href="/gokuyou/pages/calendar.html" style="color:var(--primary);font-weight:700;">最初の一件を登録する →</a></div>';
+        return;
+      }
+      var days = ['日','月','火','水','木','金','土'];
+      var html = '<div style="display:flex;flex-direction:column;gap:8px;">';
+      events.forEach(function(ev) {
+        var d = ev.event_date ? new Date(ev.event_date + 'T00:00:00') : null;
+        var dateLabel = d ? ((d.getMonth()+1) + '/' + d.getDate() + '(' + days[d.getDay()] + ')') : '';
+        var nickname = ev.profiles && ev.profiles.nickname ? ev.profiles.nickname : '匿名';
+        html += '<div style="background:var(--white);border-radius:12px;padding:12px 14px;border:1px solid var(--border);display:flex;align-items:center;gap:12px;">' +
+          '<span style="font-size:11px;font-weight:700;color:var(--primary);min-width:50px;">' + escHtml(dateLabel) + '</span>' +
+          '<span style="font-size:13px;font-weight:600;color:var(--text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escHtml(ev.title || '') + '</span>' +
+          '<span style="font-size:10px;color:var(--text3);flex-shrink:0;">' + escHtml(nickname) + '</span>' +
+          '</div>';
+      });
+      html += '</div>';
+      el.innerHTML = html;
+    })
+    .catch(function() {
+      el.innerHTML = '<div style="background:var(--white);border-radius:14px;padding:18px;border:1px solid var(--border);text-align:center;color:var(--text3);font-size:13px;"><a href="/gokuyou/pages/calendar.html" style="color:var(--primary);font-weight:700;">カレンダーを見る →</a></div>';
+    });
 }
 
 // ===== カレンダー =====
@@ -1173,7 +1183,7 @@ function doSaveStep(text) {
 }
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('streak-num').textContent = getStreak();
-  renderCalendar();
+  loadCalPreview();
 });
 </script>
 

@@ -381,6 +381,144 @@
     font-size: 13px;
     line-height: 1.8;
   }
+
+  /* Tab UI */
+  .cal-tabs {
+    display: flex;
+    background: var(--white);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    gap: 4px;
+  }
+
+  .cal-tab-btn {
+    flex: 1;
+    padding: 9px 8px;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    background: transparent;
+    color: var(--text3);
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+  }
+
+  .cal-tab-btn.active {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(255,107,53,0.3);
+  }
+
+  .cal-tab-pane { display: none; }
+  .cal-tab-pane.active { display: block; }
+
+  /* My calendar grid */
+  .my-cal-wrap {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    margin-bottom: 20px;
+  }
+
+  .my-cal-month-label {
+    font-size: 13px;
+    color: var(--text2);
+    font-weight: 600;
+    margin-bottom: 14px;
+    letter-spacing: 0.05em;
+  }
+
+  .my-cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+    margin-bottom: 14px;
+  }
+
+  .my-cal-day-label {
+    text-align: center;
+    font-size: 10px;
+    color: var(--text3);
+    padding: 4px 0;
+    font-weight: 600;
+  }
+
+  .my-cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--text2);
+    border-radius: 8px;
+  }
+
+  .my-cal-day.has-event { background: var(--primary-bg); color: var(--primary); font-weight: 700; }
+  .my-cal-day.is-today { background: var(--primary); color: #fff; font-weight: 800; }
+  .my-cal-day.is-memorial { background: #EEF3FD; color: #2D6BE4; font-weight: 700; }
+  .my-cal-day.empty { opacity: 0; }
+
+  .my-cal-legend {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .my-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: var(--text3);
+  }
+
+  .my-legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 3px;
+  }
+
+  .dot-log { background: var(--primary-bg); border: 1.5px solid var(--primary); }
+  .dot-today { background: var(--primary); }
+  .dot-memorial { background: #EEF3FD; border: 1.5px solid #2D6BE4; }
+
+  /* Bottom nav */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 8px 0 18px;
+    z-index: 100;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .nav-icon { font-size: 20px; line-height: 1; }
+  .nav-label { font-size: 9px; letter-spacing: 0.03em; color: var(--text3); font-weight: 600; }
+  .nav-item.active .nav-label { color: var(--primary); }
 </style>
 </head>
 <body>
@@ -390,7 +528,7 @@
 <nav class="cal-top-nav">
   <a href="/gokuyou/">🏠 ホーム</a>
   <a href="/gokuyou/gokuyou_kingen">📜 敗北者の金言</a>
-  <a href="/gokuyou/log">📖 私の軌跡</a>
+  <a href="/gokuyou/log">📖 軌跡</a>
   <a id="nav-auth-link" href="/gokuyou/pages/login.html">ログイン</a>
 </nav>
 
@@ -398,33 +536,151 @@
 <h1 class="cal-title">カレンダー</h1>
 <p class="cal-desc">挑戦者たちのイベント一覧。<br>あなたの予定もシェアしよう。</p>
 
-<!-- Filter -->
-<div class="cal-filter">
-  <button class="cal-filter-btn active" data-genre="all">すべて</button>
-  <button class="cal-filter-btn" data-genre="Entertainment">芸能</button>
-  <button class="cal-filter-btn" data-genre="Creative">創作</button>
-  <button class="cal-filter-btn" data-genre="Sports">スポーツ</button>
-  <button class="cal-filter-btn" data-genre="Study">勉強</button>
-  <button class="cal-filter-btn" data-genre="Business">起業</button>
-  <select class="cal-filter-select" id="status-filter">
-    <option value="all">ステータス: すべて</option>
-    <option value="挑戦中">挑戦中</option>
-    <option value="諦めた">諦めた</option>
-    <option value="探し中">探し中</option>
-  </select>
+<!-- Tab buttons -->
+<div class="cal-tabs">
+  <button class="cal-tab-btn active" id="tab-event-btn" onclick="switchTab('event')">📅 イベントシェア</button>
+  <button class="cal-tab-btn" id="tab-my-btn" onclick="switchTab('my')">📖 マイカレンダー</button>
 </div>
 
-<!-- Register toggle -->
-<div id="register-area"></div>
+<!-- イベントシェアカレンダー tab -->
+<div class="cal-tab-pane active" id="tab-event">
+  <!-- Filter -->
+  <div class="cal-filter">
+    <button class="cal-filter-btn active" data-genre="all">すべて</button>
+    <button class="cal-filter-btn" data-genre="Entertainment">Entertainment</button>
+    <button class="cal-filter-btn" data-genre="Creative">Creative</button>
+    <button class="cal-filter-btn" data-genre="Sports">Sports</button>
+    <button class="cal-filter-btn" data-genre="Study">Study</button>
+    <button class="cal-filter-btn" data-genre="Business">Business</button>
+    <button class="cal-filter-btn" data-genre="Others">Others</button>
+    <select class="cal-filter-select" id="status-filter">
+      <option value="all">ステータス: すべて</option>
+      <option value="挑戦中">挑戦中</option>
+      <option value="諦めた">諦めた</option>
+      <option value="探し中">探し中</option>
+    </select>
+  </div>
 
-<!-- Event list -->
-<div id="cal-list"></div>
+  <!-- Register toggle -->
+  <div id="register-area"></div>
+
+  <!-- Event list -->
+  <div id="cal-list"></div>
+</div>
+
+<!-- マイカレンダー tab -->
+<div class="cal-tab-pane" id="tab-my">
+  <div class="my-cal-wrap">
+    <p class="my-cal-month-label" id="my-cal-month"></p>
+    <div class="my-cal-grid" id="my-cal-grid">
+      <div class="my-cal-day-label">日</div>
+      <div class="my-cal-day-label">月</div>
+      <div class="my-cal-day-label">火</div>
+      <div class="my-cal-day-label">水</div>
+      <div class="my-cal-day-label">木</div>
+      <div class="my-cal-day-label">金</div>
+      <div class="my-cal-day-label">土</div>
+    </div>
+    <div class="my-cal-legend">
+      <div class="my-legend-item"><div class="my-legend-dot dot-log"></div>記録あり</div>
+      <div class="my-legend-item"><div class="my-legend-dot dot-today"></div>今日</div>
+      <div class="my-legend-item"><div class="my-legend-dot dot-memorial"></div>供養した日</div>
+    </div>
+  </div>
+  <div id="my-log-preview"></div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+  <a href="/gokuyou/" class="nav-item">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label">ホーム</span>
+  </a>
+  <a href="/gokuyou/log" class="nav-item">
+    <span class="nav-icon">📖</span>
+    <span class="nav-label">軌跡</span>
+  </a>
+  <a href="/gokuyou/gokuyou_kingen" class="nav-item">
+    <span class="nav-icon">📜</span>
+    <span class="nav-label">金言</span>
+  </a>
+  <a href="/gokuyou/pages/calendar.html" class="nav-item active">
+    <span class="nav-icon">📅</span>
+    <span class="nav-label">カレンダー</span>
+  </a>
+</nav>
 
 <script>
 var currentSession = null;
 var allEvents = [];
 var activeGenre = 'all';
 var activeStatus = 'all';
+var activeTab = 'event';
+
+function switchTab(tab) {
+  activeTab = tab;
+  document.getElementById('tab-event').classList.toggle('active', tab === 'event');
+  document.getElementById('tab-my').classList.toggle('active', tab === 'my');
+  document.getElementById('tab-event-btn').classList.toggle('active', tab === 'event');
+  document.getElementById('tab-my-btn').classList.toggle('active', tab === 'my');
+  if (tab === 'my') renderMyCalendar();
+}
+
+function renderMyCalendar() {
+  var now = new Date();
+  var year = now.getFullYear();
+  var month = now.getMonth();
+  var today = now.getDate();
+
+  document.getElementById('my-cal-month').textContent = year + '年 ' + (month + 1) + '月';
+
+  var logs = JSON.parse(localStorage.getItem('gokuyou_logs') || '[]');
+  var memorials = JSON.parse(localStorage.getItem('gokuyou_memorials') || '[]');
+  var logDates = new Set(logs.map(function(l) { return l.date; }));
+  var memorialDates = new Set(memorials.map(function(m) { return m.date; }));
+
+  var grid = document.getElementById('my-cal-grid');
+  var labels = Array.from(grid.querySelectorAll('.my-cal-day-label'));
+  grid.innerHTML = '';
+  labels.forEach(function(l) { grid.appendChild(l); });
+
+  var firstDay = new Date(year, month, 1).getDay();
+  var daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  for (var i = 0; i < firstDay; i++) {
+    var empty = document.createElement('div');
+    empty.className = 'my-cal-day empty';
+    grid.appendChild(empty);
+  }
+
+  for (var d = 1; d <= daysInMonth; d++) {
+    var dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+    var el = document.createElement('div');
+    var cls = 'my-cal-day';
+    if (d === today) cls += ' is-today';
+    else if (memorialDates.has(dateStr)) cls += ' is-memorial';
+    else if (logDates.has(dateStr)) cls += ' has-event';
+    el.className = cls;
+    el.textContent = d;
+    grid.appendChild(el);
+  }
+
+  var preview = document.getElementById('my-log-preview');
+  var recent = logs.slice().reverse().slice(0, 5);
+  if (!recent.length) {
+    preview.innerHTML = '<p style="text-align:center;padding:20px 0;color:var(--text3);font-size:13px;">まだ記録がありません。</p>';
+    return;
+  }
+  var html = '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">';
+  recent.forEach(function(l) {
+    html += '<div style="background:var(--white);border-radius:12px;padding:12px 14px;border:1px solid var(--border);">' +
+      '<div style="font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600;">' + escHtml(l.date) + '</div>' +
+      '<div style="font-size:13px;color:var(--text);">' + escHtml(l.text) + '</div>' +
+      '</div>';
+  });
+  html += '</div>';
+  preview.innerHTML = html;
+}
 
 document.addEventListener('DOMContentLoaded', function () {
   if (!window.supabaseClient) {
