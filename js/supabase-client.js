@@ -55,9 +55,11 @@
           var navLink = document.getElementById('nav-auth-link');
           if (navLink) {
             if (session) {
-              navLink.innerHTML = '<a href="/gokuyou/pages/profile.html" style="color:inherit;text-decoration:none;">マイページ</a>';
+              navLink.href = '/gokuyou/pages/profile.html';
+              navLink.textContent = 'マイページ';
             } else {
-              navLink.innerHTML = '<a href="/gokuyou/pages/login.html" style="color:inherit;text-decoration:none;">ログイン</a>';
+              navLink.href = '/gokuyou/pages/login.html';
+              navLink.textContent = 'ログイン';
             }
           }
 
