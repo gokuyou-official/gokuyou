@@ -976,21 +976,16 @@ function loadEvents() {
 
   window.supabaseClient
     .from('events')
-    .select('id, title, description, event_date, event_time, location, link, genre, status, user_id, profiles(nickname, avatar_emoji)')
+    .select('*')
     .order('event_date', { ascending: true })
     .then(function (result) {
       if (result.error) {
         console.error(result.error);
         var msg = result.error.message || result.error.code || '';
         var isNoTable = msg.indexOf('42P01') !== -1 || msg.indexOf('does not exist') !== -1 || msg.indexOf('relation') !== -1;
-        if (isNoTable) {
-          listEl.innerHTML =
-            '<div class="cal-empty">eventsテーブルが未作成です。<br>' +
-            'Supabase SQL Editorで以下のSQLを実行してください。<br><br>' +
-            '<a href="/gokuyou/pages/calendar.html#sql-needed" style="color:var(--primary);font-weight:700;">詳細はコンソールを確認</a></div>';
-        } else {
-          listEl.innerHTML = '<p class="cal-empty">データの読み込みに失敗しました。<br>しばらくしてから再度お試しください。</p>';
-        }
+        listEl.innerHTML = isNoTable
+          ? '<div class="cal-empty">eventsテーブルが未作成です。<br>Supabase SQL Editorでテーブルを作成してください。</div>'
+          : '<p class="cal-empty" style="color:var(--error);">エラー: ' + escHtml(msg || '読み込みに失敗しました') + '</p>';
         return;
       }
       allEvents = result.data || [];
@@ -999,7 +994,7 @@ function loadEvents() {
     })
     .catch(function (e) {
       console.error(e);
-      listEl.innerHTML = '<p class="cal-empty">データの読み込みに失敗しました。<br>しばらくしてから再度お試しください。</p>';
+      listEl.innerHTML = '<p class="cal-empty" style="color:var(--error);">エラー: ' + escHtml(String(e.message || e)) + '</p>';
     });
 }
 
