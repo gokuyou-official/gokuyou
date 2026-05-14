@@ -110,29 +110,44 @@ document.addEventListener('DOMContentLoaded', function () {
     return;
   }
 
-  window.supabaseClient.auth.exchangeCodeForSession(window.location.search)
-    .then(function (result) {
-      if (result && result.error) {
-        console.error(result.error);
-        msg.textContent = '認証に失敗しました。';
-        sub.textContent = 'ログインページへ戻ります...';
-        spinner.style.display = 'none';
-        setTimeout(function () {
-          window.location.href = '/gokuyou/pages/login.html';
-        }, 3000);
-      } else {
-        window.location.href = '/gokuyou/pages/profile.html';
-      }
-    })
-    .catch(function (e) {
-      console.error(e);
-      msg.textContent = '認証に失敗しました。';
-      sub.textContent = 'ログインページへ戻ります...';
-      spinner.style.display = 'none';
-      setTimeout(function () {
-        window.location.href = '/gokuyou/pages/login.html';
-      }, 3000);
-    });
+  function handleError(e) {
+    console.error(e);
+    msg.textContent = '認証に失敗しました。';
+    sub.textContent = 'ログインページへ戻ります...';
+    spinner.style.display = 'none';
+    setTimeout(function () {
+      window.location.href = '/gokuyou/pages/login.html';
+    }, 3000);
+  }
+
+  function handleSuccess() {
+    window.location.href = '/gokuyou/pages/profile.html';
+  }
+
+  // ハッシュに access_token が含まれる場合（implicit flow）は getSession で確認
+  var hash = window.location.hash || '';
+  if (hash.indexOf('access_token') !== -1) {
+    window.supabaseClient.auth.getSession()
+      .then(function (result) {
+        if (result && result.data && result.data.session) {
+          handleSuccess();
+        } else {
+          handleError(new Error('No session from hash'));
+        }
+      })
+      .catch(handleError);
+  } else {
+    // PKCE flow: code が query param に含まれる
+    window.supabaseClient.auth.exchangeCodeForSession(window.location.search)
+      .then(function (result) {
+        if (result && result.error) {
+          handleError(result.error);
+        } else {
+          handleSuccess();
+        }
+      })
+      .catch(handleError);
+  }
 });
 </script>
 

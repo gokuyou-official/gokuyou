@@ -878,6 +878,74 @@
     font-size: 13px;
     color: #888;
   }
+
+  /* ========== EVENT MODAL ========== */
+  .ev-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.48);
+    z-index: 999;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .ev-modal-overlay.open { display: flex; }
+  .ev-modal {
+    background: var(--white);
+    border-radius: 20px 20px 0 0;
+    padding: 20px 20px 40px;
+    width: 100%;
+    max-width: 430px;
+    max-height: 78vh;
+    overflow-y: auto;
+  }
+  .ev-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .ev-modal-date {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.1em;
+  }
+  .ev-modal-close {
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: var(--text3);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 2px;
+  }
+  .ev-modal-item {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .ev-modal-item:last-child { border-bottom: none; }
+  .ev-modal-title { font-size: 16px; font-weight: 800; color: var(--text); margin-bottom: 8px; line-height: 1.4; }
+  .ev-modal-meta { font-size: 12px; color: var(--text2); margin-bottom: 6px; line-height: 1.8; }
+  .ev-modal-author { font-size: 12px; color: var(--text3); margin-bottom: 8px; }
+  .ev-modal-desc { font-size: 13px; color: var(--text2); line-height: 1.7; margin-bottom: 10px; }
+  .ev-modal-link {
+    display: inline-block;
+    padding: 8px 16px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .ev-modal-empty {
+    text-align: center;
+    padding: 24px 0;
+    color: var(--text3);
+    font-size: 13px;
+    line-height: 1.8;
+  }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/gokuyou/js/config.js"></script>
@@ -1071,19 +1139,19 @@
   <div class="howto-steps">
     <div class="howto-step">
       <span class="howto-number">01</span>
-      <p class="howto-text">今日の夢への一歩を記録する<br><span class="howto-sub">練習でも、悩んだ日でも、なんでもいい</span></p>
+      <p class="howto-text">今日の夢への一歩を記録する<br><span class="howto-sub">練習でも、悩んだ日でも、一言から記録できます。</span></p>
     </div>
     <div class="howto-step">
       <span class="howto-number">02</span>
-      <p class="howto-text">軌跡がカレンダーに積み上がっていく<br><span class="howto-sub">続けた日が、自分の証明になる</span></p>
+      <p class="howto-text">軌跡がカレンダーに積み上がっていく<br><span class="howto-sub">続けた日がカレンダーに積み上がり、あなたの証明になります。</span></p>
     </div>
     <div class="howto-step">
       <span class="howto-number">03</span>
-      <p class="howto-text">自分の挑戦をシェアする<br><span class="howto-sub">イベントカレンダーでイベントを公開、応援してもらおう</span></p>
+      <p class="howto-text">自分の挑戦をシェアする<br><span class="howto-sub">イベントカレンダーで活動を公開し、応援してもらえます。</span></p>
     </div>
     <div class="howto-step">
       <span class="howto-number">04</span>
-      <p class="howto-text">仲間の一歩を見て、応援する<br><span class="howto-sub">追いかけてる人も、諦めた人も、ここにいる</span></p>
+      <p class="howto-text">仲間の一歩を見て、応援する<br><span class="howto-sub">夢を追う仲間の一歩を見て、応援することができます。</span></p>
     </div>
   </div>
 </section>
@@ -1114,6 +1182,17 @@
 </nav>
 
 </div><!-- /main-content -->
+
+<!-- EVENT MODAL -->
+<div class="ev-modal-overlay" id="ev-modal-overlay" onclick="onEvModalOverlayClick(event)">
+  <div class="ev-modal" id="ev-modal">
+    <div class="ev-modal-header">
+      <span class="ev-modal-date" id="ev-modal-date"></span>
+      <button class="ev-modal-close" onclick="closeEvModal()">×</button>
+    </div>
+    <div id="ev-modal-body"></div>
+  </div>
+</div>
 
 <script>
 function escHtml(s) {
@@ -1196,14 +1275,17 @@ function renderTopCalendar(highlightDates) {
 }
 
 function onTopCalDayClick(dateStr) {
-  topCalSelectedDate = topCalSelectedDate === dateStr ? null : dateStr;
+  var now = new Date();
+  var d = new Date(dateStr + 'T00:00:00');
+  var days = ['日','月','火','水','木','金','土'];
+  var dateLabel = (d.getMonth()+1) + '月' + d.getDate() + '日（' + days[d.getDay()] + '）';
+
   if (topCalTab === 'event') {
-    renderTopCalendar(topCalEventDates);
-    renderCalPreviewForDate(topCalSelectedDate);
+    var events = allTopCalEvents.filter(function(ev) { return ev.event_date === dateStr; });
+    showEvModal(events, dateLabel);
   } else {
-    var logDates = new Set(getLogs().map(function(l) { return l.date; }));
-    renderTopCalendar(logDates);
-    renderMyLogPreviewForDate(topCalSelectedDate);
+    var logs = getLogs().filter(function(l) { return l.date === dateStr; });
+    showLogModal(logs, dateLabel);
   }
 }
 
@@ -1283,7 +1365,7 @@ function loadCalPreview() {
 
   window.supabaseClient
     .from('events')
-    .select('id, title, event_date, genre')
+    .select('id, title, description, event_date, event_time, location, link, genre, status, user_id, profiles(nickname, avatar_emoji)')
     .gte('event_date', monthStart)
     .lte('event_date', monthEnd)
     .order('event_date', { ascending: true })
@@ -1291,11 +1373,65 @@ function loadCalPreview() {
       allTopCalEvents = (result && result.data) ? result.data : [];
       topCalEventDates = new Set(allTopCalEvents.map(function(ev) { return ev.event_date; }));
       renderTopCalendar(topCalEventDates);
-      renderCalPreviewForDate(topCalSelectedDate);
+      renderCalPreviewForDate(null);
     })
     .catch(function() {
       el.innerHTML = '<div style="background:var(--white);border-radius:14px;padding:18px;border:1px solid var(--border);text-align:center;color:var(--text3);font-size:13px;"><a href="/gokuyou/pages/calendar.html" style="color:var(--primary);font-weight:700;">カレンダーを見る →</a></div>';
     });
+}
+
+// ===== イベントモーダル =====
+function showEvModal(events, dateLabel) {
+  document.getElementById('ev-modal-date').textContent = dateLabel;
+  var body = document.getElementById('ev-modal-body');
+  if (!events.length) {
+    body.innerHTML = '<div class="ev-modal-empty">この日のイベントはありません</div>';
+  } else {
+    var html = '';
+    events.forEach(function(ev) {
+      var nickname = (ev.profiles && ev.profiles.nickname) ? ev.profiles.nickname : '匿名';
+      var avatar = (ev.profiles && ev.profiles.avatar_emoji) ? ev.profiles.avatar_emoji : '🙂';
+      html += '<div class="ev-modal-item">';
+      html += '<p class="ev-modal-title">' + escHtml(ev.title || '') + '</p>';
+      if (ev.event_time || ev.location) {
+        html += '<p class="ev-modal-meta">';
+        if (ev.event_time) html += '🕐 ' + escHtml(ev.event_time) + '　';
+        if (ev.location) html += '📍 ' + escHtml(ev.location);
+        html += '</p>';
+      }
+      html += '<p class="ev-modal-author">' + avatar + ' ' + escHtml(nickname) + '</p>';
+      if (ev.description) html += '<p class="ev-modal-desc">' + escHtml(ev.description) + '</p>';
+      if (ev.link) html += '<a class="ev-modal-link" href="' + escHtml(ev.link) + '" target="_blank" rel="noopener">🔗 詳細・チケット</a>';
+      html += '</div>';
+    });
+    body.innerHTML = html;
+  }
+  document.getElementById('ev-modal-overlay').classList.add('open');
+}
+
+function showLogModal(logs, dateLabel) {
+  document.getElementById('ev-modal-date').textContent = dateLabel;
+  var body = document.getElementById('ev-modal-body');
+  if (!logs.length) {
+    body.innerHTML = '<div class="ev-modal-empty">この日の記録はありません</div>';
+  } else {
+    var html = '';
+    logs.forEach(function(l) {
+      html += '<div class="ev-modal-item">';
+      html += '<p class="ev-modal-title" style="font-size:13px;font-weight:600;">' + escHtml(l.text || '') + '</p>';
+      html += '</div>';
+    });
+    body.innerHTML = html;
+  }
+  document.getElementById('ev-modal-overlay').classList.add('open');
+}
+
+function closeEvModal() {
+  document.getElementById('ev-modal-overlay').classList.remove('open');
+}
+
+function onEvModalOverlayClick(e) {
+  if (e.target === document.getElementById('ev-modal-overlay')) closeEvModal();
 }
 
 // ===== カレンダー =====

@@ -521,6 +521,43 @@
   .nav-icon { font-size: 20px; line-height: 1; }
   .nav-label { font-size: 9px; letter-spacing: 0.03em; color: var(--text3); font-weight: 600; }
   .nav-item.active .nav-label { color: var(--primary); }
+
+  /* ========== EVENT MODAL ========== */
+  .ev-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.48);
+    z-index: 999;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .ev-modal-overlay.open { display: flex; }
+  .ev-modal {
+    background: var(--white);
+    border-radius: 20px 20px 0 0;
+    padding: 20px 20px 40px;
+    width: 100%;
+    max-width: 430px;
+    max-height: 78vh;
+    overflow-y: auto;
+  }
+  .ev-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .ev-modal-date { font-size: 11px; font-weight: 700; color: var(--primary); letter-spacing: 0.1em; }
+  .ev-modal-close { background: none; border: none; font-size: 22px; color: var(--text3); cursor: pointer; line-height: 1; padding: 0 2px; }
+  .ev-modal-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .ev-modal-item:last-child { border-bottom: none; }
+  .ev-modal-title { font-size: 16px; font-weight: 800; color: var(--text); margin-bottom: 8px; line-height: 1.4; }
+  .ev-modal-meta { font-size: 12px; color: var(--text2); margin-bottom: 6px; line-height: 1.8; }
+  .ev-modal-author { font-size: 12px; color: var(--text3); margin-bottom: 8px; }
+  .ev-modal-desc { font-size: 13px; color: var(--text2); line-height: 1.7; margin-bottom: 10px; }
+  .ev-modal-link { display: inline-block; padding: 8px 16px; background: var(--primary); color: #fff; border-radius: 8px; font-size: 12px; font-weight: 700; text-decoration: none; }
+  .ev-modal-empty { text-align: center; padding: 24px 0; color: var(--text3); font-size: 13px; line-height: 1.8; }
 </style>
 </head>
 <body>
@@ -630,6 +667,17 @@
   </a>
 </nav>
 
+<!-- EVENT MODAL -->
+<div class="ev-modal-overlay" id="ev-modal-overlay" onclick="onEvModalOverlayClick(event)">
+  <div class="ev-modal" id="ev-modal">
+    <div class="ev-modal-header">
+      <span class="ev-modal-date" id="ev-modal-date"></span>
+      <button class="ev-modal-close" onclick="closeEvModal()">×</button>
+    </div>
+    <div id="ev-modal-body"></div>
+  </div>
+</div>
+
 <script>
 var currentSession = null;
 var allEvents = [];
@@ -685,9 +733,11 @@ function renderEventCalendar() {
     el.textContent = d;
     (function(ds) {
       el.addEventListener('click', function() {
-        evCalSelectedDate = evCalSelectedDate === ds ? null : ds;
-        renderEventCalendar();
-        renderList();
+        var d2 = new Date(ds + 'T00:00:00');
+        var wdays = ['日','月','火','水','木','金','土'];
+        var label = (d2.getMonth()+1) + '月' + d2.getDate() + '日（' + wdays[d2.getDay()] + '）';
+        var evs = allEvents.filter(function(ev) { return ev.event_date === ds; });
+        showEvModal(evs, label);
       });
     })(dateStr);
     grid.appendChild(el);
@@ -733,26 +783,24 @@ function renderMyCalendar() {
     el.textContent = d;
     (function(ds) {
       el.addEventListener('click', function() {
-        myCalSelectedDate = myCalSelectedDate === ds ? null : ds;
-        renderMyCalendar();
+        var d2 = new Date(ds + 'T00:00:00');
+        var wdays = ['日','月','火','水','木','金','土'];
+        var label = (d2.getMonth()+1) + '月' + d2.getDate() + '日（' + wdays[d2.getDay()] + '）';
+        var dayLogs = logs.filter(function(l) { return l.date === ds; });
+        showLogModal(dayLogs, label);
       });
     })(dateStr);
     grid.appendChild(el);
   }
 
   var preview = document.getElementById('my-log-preview');
-  var allLogs = logs.slice().reverse();
-  var filtered = myCalSelectedDate
-    ? allLogs.filter(function(l) { return l.date === myCalSelectedDate; })
-    : allLogs.slice(0, 5);
-
-  if (!filtered.length) {
-    var msg = myCalSelectedDate ? 'この日の記録はありません。' : 'まだ記録がありません。';
-    preview.innerHTML = '<p style="text-align:center;padding:20px 0;color:var(--text3);font-size:13px;">' + msg + '</p>';
+  var recent = logs.slice().reverse().slice(0, 5);
+  if (!recent.length) {
+    preview.innerHTML = '<p style="text-align:center;padding:20px 0;color:var(--text3);font-size:13px;">まだ記録がありません。</p>';
     return;
   }
   var html = '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">';
-  filtered.forEach(function(l) {
+  recent.forEach(function(l) {
     html += '<div style="background:var(--white);border-radius:12px;padding:12px 14px;border:1px solid var(--border);">' +
       '<div style="font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600;">' + escHtml(l.date) + '</div>' +
       '<div style="font-size:13px;color:var(--text);">' + escHtml(l.text) + '</div>' +
@@ -928,7 +976,7 @@ function loadEvents() {
 
   window.supabaseClient
     .from('events')
-    .select('id, title, description, event_date, genre, status, user_id')
+    .select('id, title, description, event_date, event_time, location, link, genre, status, user_id, profiles(nickname, avatar_emoji)')
     .order('event_date', { ascending: true })
     .then(function (result) {
       if (result.error) {
@@ -1031,6 +1079,59 @@ function formatDate(dateStr) {
 
 function escHtml(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function showEvModal(events, dateLabel) {
+  document.getElementById('ev-modal-date').textContent = dateLabel;
+  var body = document.getElementById('ev-modal-body');
+  if (!events.length) {
+    body.innerHTML = '<div class="ev-modal-empty">この日のイベントはありません</div>';
+  } else {
+    var html = '';
+    events.forEach(function(ev) {
+      var nickname = (ev.profiles && ev.profiles.nickname) ? ev.profiles.nickname : '匿名';
+      var avatar = (ev.profiles && ev.profiles.avatar_emoji) ? ev.profiles.avatar_emoji : '🙂';
+      html += '<div class="ev-modal-item">';
+      html += '<p class="ev-modal-title">' + escHtml(ev.title || '') + '</p>';
+      if (ev.event_time || ev.location) {
+        html += '<p class="ev-modal-meta">';
+        if (ev.event_time) html += '🕐 ' + escHtml(ev.event_time) + '　';
+        if (ev.location) html += '📍 ' + escHtml(ev.location);
+        html += '</p>';
+      }
+      html += '<p class="ev-modal-author">' + avatar + ' ' + escHtml(nickname) + '</p>';
+      if (ev.description) html += '<p class="ev-modal-desc">' + escHtml(ev.description) + '</p>';
+      if (ev.link) html += '<a class="ev-modal-link" href="' + escHtml(ev.link) + '" target="_blank" rel="noopener">🔗 詳細・チケット</a>';
+      html += '</div>';
+    });
+    body.innerHTML = html;
+  }
+  document.getElementById('ev-modal-overlay').classList.add('open');
+}
+
+function showLogModal(logs, dateLabel) {
+  document.getElementById('ev-modal-date').textContent = dateLabel;
+  var body = document.getElementById('ev-modal-body');
+  if (!logs.length) {
+    body.innerHTML = '<div class="ev-modal-empty">この日の記録はありません</div>';
+  } else {
+    var html = '';
+    logs.forEach(function(l) {
+      html += '<div class="ev-modal-item">';
+      html += '<p class="ev-modal-title" style="font-size:13px;font-weight:600;">' + escHtml(l.text || '') + '</p>';
+      html += '</div>';
+    });
+    body.innerHTML = html;
+  }
+  document.getElementById('ev-modal-overlay').classList.add('open');
+}
+
+function closeEvModal() {
+  document.getElementById('ev-modal-overlay').classList.remove('open');
+}
+
+function onEvModalOverlayClick(e) {
+  if (e.target === document.getElementById('ev-modal-overlay')) closeEvModal();
 }
 </script>
 

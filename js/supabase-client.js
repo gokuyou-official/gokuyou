@@ -8,7 +8,8 @@
         persistSession: true,
         autoRefreshToken: true,
         detectSessionInUrl: true,
-        flowType: 'pkce'
+        flowType: 'pkce',
+        storageKey: 'gokuyou-auth'
       }
     });
 
@@ -51,13 +52,15 @@
         window.supabaseClient.auth.getSession().then(function (result) {
           var session = result && result.data ? result.data.session : null;
 
-          // サイドバーのナビリンク
+          // サイドバーのナビリンク（navLinkは<a>要素のため入れ子にならないよう直接設定）
           var navLink = document.getElementById('nav-auth-link');
           if (navLink) {
             if (session) {
-              navLink.innerHTML = '<a href="/gokuyou/pages/profile.html" style="color:inherit;text-decoration:none;">マイページ</a>';
+              navLink.href = '/gokuyou/pages/profile.html';
+              navLink.textContent = 'マイページ';
             } else {
-              navLink.innerHTML = '<a href="/gokuyou/pages/login.html" style="color:inherit;text-decoration:none;">ログイン</a>';
+              navLink.href = '/gokuyou/pages/login.html';
+              navLink.textContent = 'ログイン';
             }
           }
 
