@@ -1365,11 +1365,16 @@ function loadCalPreview() {
 
   window.supabaseClient
     .from('events')
-    .select('id, title, description, event_date, event_time, location, link, genre, status, user_id, profiles(nickname, avatar_emoji)')
+    .select('*')
     .gte('event_date', monthStart)
     .lte('event_date', monthEnd)
     .order('event_date', { ascending: true })
     .then(function(result) {
+      if (result && result.error) {
+        console.error(result.error);
+        el.innerHTML = '<div style="background:var(--white);border-radius:14px;padding:18px;border:1px solid var(--border);text-align:center;color:var(--text3);font-size:13px;"><a href="/gokuyou/pages/calendar.html" style="color:var(--primary);font-weight:700;">カレンダーを見る →</a></div>';
+        return;
+      }
       allTopCalEvents = (result && result.data) ? result.data : [];
       topCalEventDates = new Set(allTopCalEvents.map(function(ev) { return ev.event_date; }));
       renderTopCalendar(topCalEventDates);
