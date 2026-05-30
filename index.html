@@ -1435,29 +1435,86 @@ function saveStep() {
         return;
       }
       loginMsg.style.display = 'none';
-      doSaveStep(text);
+      doSaveStep(text, session);
     }).catch(function () {
       loginMsg.style.display = '';
       setTimeout(function () { loginMsg.style.display = 'none'; }, 4000);
     });
   } else {
-    doSaveStep(text);
+    doSaveStep(text, null);
   }
 }
 
-function doSaveStep(text) {
-  var logs = getLogs();
-  var today = new Date().toISOString().slice(0, 10);
-  logs.push({ date: today, text: text });
-  saveLogs(logs);
+function showStepSaved() {
   document.getElementById('step-input').value = '';
   var msg = document.getElementById('step-saved');
   msg.classList.add('show');
   setTimeout(function() { msg.classList.remove('show'); }, 2000);
-  document.getElementById('streak-num').textContent = getStreak();
+}
+
+function doSaveStep(text, session) {
+  var today = new Date().toISOString().slice(0, 10);
+
+  if (session && window.supabaseClient) {
+    window.supabaseClient
+      .from('today_steps')
+      .insert({ user_id: session.user.id, date: today, text: text })
+      .then(function(result) {
+        if (!result.error) {
+          var logs = getLogs();
+          logs.push({ date: today, text: text });
+          saveLogs(logs);
+          document.getElementById('streak-num').textContent = getStreak();
+        } else {
+          console.error(result.error);
+        }
+        showStepSaved();
+      })
+      .catch(function(e) {
+        console.error(e);
+        showStepSaved();
+      });
+  } else {
+    var logs = getLogs();
+    logs.push({ date: today, text: text });
+    saveLogs(logs);
+    showStepSaved();
+    document.getElementById('streak-num').textContent = getStreak();
+  }
+}
+
+function initStepStreak() {
+  if (!window.supabaseClient) {
+    document.getElementById('streak-num').textContent = getStreak();
+    return;
+  }
+  window.supabaseClient.auth.getSession().then(function(result) {
+    var session = result && result.data ? result.data.session : null;
+    if (!session) {
+      document.getElementById('streak-num').textContent = getStreak();
+      return;
+    }
+    window.supabaseClient
+      .from('today_steps')
+      .select('date, text')
+      .eq('user_id', session.user.id)
+      .order('date', { ascending: false })
+      .limit(200)
+      .then(function(result) {
+        if (!result.error && result.data) {
+          saveLogs(result.data);
+        }
+        document.getElementById('streak-num').textContent = getStreak();
+      })
+      .catch(function() {
+        document.getElementById('streak-num').textContent = getStreak();
+      });
+  }).catch(function() {
+    document.getElementById('streak-num').textContent = getStreak();
+  });
 }
 document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('streak-num').textContent = getStreak();
+  initStepStreak();
   loadCalPreview();
 });
 </script>

@@ -593,10 +593,11 @@ function saveMemorials(m) {
 }
 
 // ===== 軌跡一覧レンダリング =====
-function renderLogs() {
-  var logs = getLogs().slice().reverse();
+function renderLogs(data) {
+  var logs = (data || getLogs()).slice().reverse();
   var list = document.getElementById('log-list');
   var empty = document.getElementById('log-empty');
+  list.innerHTML = '';
   if (!logs.length) { empty.style.display = ''; return; }
   empty.style.display = 'none';
   logs.forEach(function(l) {
@@ -607,6 +608,27 @@ function renderLogs() {
       '<div class="log-text">' + escHtml(l.text) + '</div>';
     list.appendChild(item);
   });
+}
+
+function loadAndRenderLogs() {
+  if (!window.supabaseClient) { renderLogs(); return; }
+  window.supabaseClient.auth.getSession().then(function(result) {
+    var session = result && result.data ? result.data.session : null;
+    if (!session) { renderLogs(); return; }
+    window.supabaseClient
+      .from('today_steps')
+      .select('date, text')
+      .eq('user_id', session.user.id)
+      .order('date', { ascending: false })
+      .then(function(r) {
+        if (!r.error && r.data) {
+          renderLogs(r.data);
+        } else {
+          renderLogs();
+        }
+      })
+      .catch(function() { renderLogs(); });
+  }).catch(function() { renderLogs(); });
 }
 
 // ===== 供養一覧レンダリング =====
@@ -706,7 +728,7 @@ function gokuyouExecute() {
 
 // ===== 初期化 =====
 document.addEventListener('DOMContentLoaded', function() {
-  renderLogs();
+  loadAndRenderLogs();
   renderMemorials();
 });
 </script>
