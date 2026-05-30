@@ -1421,101 +1421,92 @@ function getStreak() {
   }
   return streak;
 }
+
+// ローカルデータをSupabaseに移行する
+function migrateLocalToSupabase(userId) {
+  var logs = getLogs();
+  if (!logs.length) return;
+  var rows = logs.map(function(l) {
+    return { user_id: userId, date: l.date, content: l.text, genre: null };
+  });
+  window.supabaseClient
+    .from('today_steps')
+    .insert(rows)
+    .then(function(res) {
+      if (!res.error) {
+        localStorage.removeItem('gokuyou_logs');
+      }
+    });
+}
+
 function saveStep() {
   var text = document.getElementById('step-input').value.trim();
   if (!text) return;
   var loginMsg = document.getElementById('step-login-msg');
 
   if (window.supabaseClient) {
-    window.supabaseClient.auth.getSession().then(function (result) {
+    window.supabaseClient.auth.getSession().then(function(result) {
       var session = result && result.data ? result.data.session : null;
       if (!session) {
+        // 未ログイン：localStorageに保存
         loginMsg.style.display = '';
-        setTimeout(function () { loginMsg.style.display = 'none'; }, 4000);
+        setTimeout(function() { loginMsg.style.display = 'none'; }, 4000);
+        doSaveStepLocal(text);
         return;
       }
       loginMsg.style.display = 'none';
-      doSaveStep(text, session);
-    }).catch(function () {
-      loginMsg.style.display = '';
-      setTimeout(function () { loginMsg.style.display = 'none'; }, 4000);
+      doSaveStepSupabase(text, session.user.id);
+    }).catch(function() {
+      doSaveStepLocal(text);
     });
   } else {
-    doSaveStep(text, null);
+    doSaveStepLocal(text);
   }
 }
 
-function showStepSaved() {
+function doSaveStepLocal(text) {
+  var logs = getLogs();
+  var today = new Date().toISOString().slice(0, 10);
+  logs.push({ date: today, text: text });
+  saveLogs(logs);
+  onStepSaved();
+}
+
+function doSaveStepSupabase(text, userId) {
+  var today = new Date().toISOString().slice(0, 10);
+  window.supabaseClient
+    .from('today_steps')
+    .insert({ user_id: userId, date: today, content: text, genre: null })
+    .then(function(res) {
+      if (res.error) {
+        doSaveStepLocal(text);
+      } else {
+        onStepSaved();
+      }
+    });
+}
+
+function onStepSaved() {
   document.getElementById('step-input').value = '';
   var msg = document.getElementById('step-saved');
   msg.classList.add('show');
   setTimeout(function() { msg.classList.remove('show'); }, 2000);
+  document.getElementById('streak-num').textContent = getStreak();
 }
 
-function doSaveStep(text, session) {
-  var today = new Date().toISOString().slice(0, 10);
-
-  if (session && window.supabaseClient) {
-    window.supabaseClient
-      .from('today_steps')
-      .insert({ user_id: session.user.id, date: today, text: text })
-      .then(function(result) {
-        if (!result.error) {
-          var logs = getLogs();
-          logs.push({ date: today, text: text });
-          saveLogs(logs);
-          document.getElementById('streak-num').textContent = getStreak();
-        } else {
-          console.error(result.error);
-        }
-        showStepSaved();
-      })
-      .catch(function(e) {
-        console.error(e);
-        showStepSaved();
-      });
-  } else {
-    var logs = getLogs();
-    logs.push({ date: today, text: text });
-    saveLogs(logs);
-    showStepSaved();
-    document.getElementById('streak-num').textContent = getStreak();
-  }
-}
-
-function initStepStreak() {
-  if (!window.supabaseClient) {
-    document.getElementById('streak-num').textContent = getStreak();
-    return;
-  }
-  window.supabaseClient.auth.getSession().then(function(result) {
-    var session = result && result.data ? result.data.session : null;
-    if (!session) {
-      document.getElementById('streak-num').textContent = getStreak();
-      return;
-    }
-    window.supabaseClient
-      .from('today_steps')
-      .select('date, text')
-      .eq('user_id', session.user.id)
-      .order('date', { ascending: false })
-      .limit(200)
-      .then(function(result) {
-        if (!result.error && result.data) {
-          saveLogs(result.data);
-        }
-        document.getElementById('streak-num').textContent = getStreak();
-      })
-      .catch(function() {
-        document.getElementById('streak-num').textContent = getStreak();
-      });
-  }).catch(function() {
-    document.getElementById('streak-num').textContent = getStreak();
-  });
-}
 document.addEventListener('DOMContentLoaded', function() {
-  initStepStreak();
+  document.getElementById('streak-num').textContent = getStreak();
   loadCalPreview();
+
+  // ログイン済みかつlocalStorageにデータがあれば移行
+  if (window.supabaseClient) {
+    window.supabaseClient.auth.getSession().then(function(result) {
+      var session = result && result.data ? result.data.session : null;
+      if (session && getLogs().length > 0) {
+        migrateLocalToSupabase(session.user.id);
+      }
+    });
+  }
 });
 </script>
 

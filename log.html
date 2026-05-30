@@ -605,7 +605,7 @@ function renderLogs(data) {
     item.className = 'log-item';
     item.innerHTML =
       '<div class="log-date">' + l.date + '</div>' +
-      '<div class="log-text">' + escHtml(l.text) + '</div>';
+      '<div class="log-text">' + escHtml(l.content || l.text) + '</div>';
     list.appendChild(item);
   });
 }
@@ -617,7 +617,7 @@ function loadAndRenderLogs() {
     if (!session) { renderLogs(); return; }
     window.supabaseClient
       .from('today_steps')
-      .select('date, text')
+      .select('date, content')
       .eq('user_id', session.user.id)
       .order('date', { ascending: false })
       .then(function(r) {
