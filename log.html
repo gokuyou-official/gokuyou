@@ -582,7 +582,7 @@
 
 <script>
 // ===== localStorage =====
-function getLogs() {
+function getLocalLogs() {
   return JSON.parse(localStorage.getItem('gokuyou_logs') || '[]');
 }
 function getMemorials() {
@@ -593,10 +593,10 @@ function saveMemorials(m) {
 }
 
 // ===== 軌跡一覧レンダリング =====
-function renderLogs() {
-  var logs = getLogs().slice().reverse();
+function renderLogsFromData(logs) {
   var list = document.getElementById('log-list');
   var empty = document.getElementById('log-empty');
+  list.innerHTML = '';
   if (!logs.length) { empty.style.display = ''; return; }
   empty.style.display = 'none';
   logs.forEach(function(l) {
@@ -604,9 +604,37 @@ function renderLogs() {
     item.className = 'log-item';
     item.innerHTML =
       '<div class="log-date">' + l.date + '</div>' +
-      '<div class="log-text">' + escHtml(l.text) + '</div>';
+      '<div class="log-text">' + escHtml(l.text || l.content || '') + '</div>';
     list.appendChild(item);
   });
+}
+
+function renderLogs() {
+  if (window.supabaseClient) {
+    window.supabaseClient.auth.getSession().then(function(result) {
+      var session = result && result.data ? result.data.session : null;
+      if (session) {
+        window.supabaseClient
+          .from('today_steps')
+          .select('date, content')
+          .eq('user_id', session.user.id)
+          .order('created_at', { ascending: false })
+          .then(function(res) {
+            if (res.error || !res.data) {
+              renderLogsFromData(getLocalLogs().slice().reverse());
+            } else {
+              renderLogsFromData(res.data);
+            }
+          });
+      } else {
+        renderLogsFromData(getLocalLogs().slice().reverse());
+      }
+    }).catch(function() {
+      renderLogsFromData(getLocalLogs().slice().reverse());
+    });
+  } else {
+    renderLogsFromData(getLocalLogs().slice().reverse());
+  }
 }
 
 // ===== 供養一覧レンダリング =====
