@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supabase テスト</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/gokuyou/js/config.js"></script>
+<script src="/gokuyou/js/supabase-client.js"></script>
+<style>
+  body { font-family: monospace; background: #111; color: #0f0; padding: 20px; }
+  h2 { color: #ff6b35; border-bottom: 1px solid #333; padding-bottom: 8px; }
+  .ok { color: #27ae60; }
+  .ng { color: #e74c3c; }
+  .warn { color: #f39c12; }
+  pre { background: #1a1a1a; padding: 12px; border-radius: 6px; white-space: pre-wrap; word-break: break-all; font-size: 13px; }
+  button { background: #ff6b35; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; margin: 4px; }
+  button:hover { background: #ff8c5a; }
+</style>
+</head>
+<body>
+
+<h2>🔍 Supabase 診断ツール</h2>
+
+<div id="output"></div>
+
+<button onclick="runAll()">▶ 全テスト実行</button>
+<button onclick="clearOutput()">🗑 クリア</button>
+
+<script>
+var out = document.getElementById('output');
+
+function log(label, value, status) {
+  var color = status === 'ok' ? '#27ae60' : status === 'ng' ? '#e74c3c' : '#f39c12';
+  var icon = status === 'ok' ? '✅' : status === 'ng' ? '❌' : '⚠️';
+  out.innerHTML += '<p>' + icon + ' <strong>' + label + '</strong>: <span style="color:' + color + '">' + value + '</span></p>';
+}
+
+function logJson(label, data) {
+  out.innerHTML += '<p>📄 <strong>' + label + '</strong></p><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+}
+
+function clearOutput() {
+  out.innerHTML = '';
+}
+
+async function runAll() {
+  clearOutput();
+  out.innerHTML += '<h2>① supabaseClient 初期化チェック</h2>';
+
+  if (window.supabaseClient) {
+    log('supabaseClient', '初期化済み', 'ok');
+  } else {
+    log('supabaseClient', '未初期化 — config.js / supabase-client.js の読み込みを確認してください', 'ng');
+    return;
+  }
+
+  if (window.GOKUYOU_CONFIG) {
+    log('SUPABASE_URL', window.GOKUYOU_CONFIG.SUPABASE_URL, 'ok');
+    log('SUPABASE_KEY', window.GOKUYOU_CONFIG.SUPABASE_KEY.slice(0, 20) + '...', 'ok');
+  } else {
+    log('GOKUYOU_CONFIG', '未定義', 'ng');
+  }
+
+  out.innerHTML += '<h2>② セッション（ログイン状態）</h2>';
+
+  try {
+    var result = await window.supabaseClient.auth.getSession();
+    var session = result && result.data ? result.data.session : null;
+
+    if (session) {
+      log('ログイン状態', 'ログイン中', 'ok');
+      log('user_id', session.user.id, 'ok');
+      log('email', session.user.email, 'ok');
+      log('トークン期限', new Date(session.expires_at * 1000).toLocaleString('ja-JP'), 'ok');
+    } else {
+      log('ログイン状態', '未ログイン — ログインしてから再実行してください', 'warn');
+      out.innerHTML += '<p>→ <a href="/gokuyou/pages/login.html" style="color:#ff6b35">ログインページへ</a></p>';
+      return;
+    }
+
+    out.innerHTML += '<h2>③ today_steps テーブル取得</h2>';
+
+    var userId = session.user.id;
+    var res = await window.supabaseClient
+      .from('today_steps')
+      .select('id, date, content, genre, created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(20);
+
+    if (res.error) {
+      log('クエリエラー', res.error.message + ' (code: ' + res.error.code + ')', 'ng');
+      logJson('エラー詳細', res.error);
+    } else if (!res.data || res.data.length === 0) {
+      log('today_steps', 'データなし（テーブルは存在するが記録が0件）', 'warn');
+    } else {
+      log('取得件数', res.data.length + ' 件', 'ok');
+      logJson('取得データ（最新20件）', res.data);
+    }
+
+  } catch (e) {
+    log('例外エラー', e.message, 'ng');
+    console.error(e);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  runAll();
+});
+</script>
+
+</body>
+</html>
