@@ -241,6 +241,7 @@
 
   <div id="success-msg" class="auth-success" style="display:none;">
     メールを送りました。受信ボックスのリンクをタップしてください。
+    <a href="message://" style="display:inline-block; margin-top:12px; padding:12px 24px; background:#FF6B35; color:#fff; border-radius:8px; text-decoration:none; font-weight:700;">メールアプリを開く</a>
   </div>
 </div>
 
@@ -288,6 +289,7 @@ document.addEventListener('DOMContentLoaded', function () {
       } else {
         form.style.display = 'none';
         successMsg.style.display = 'block';
+        setTimeout(function() { window.location.href = 'message://'; }, 1500);
       }
     }).catch(function (e) {
       console.error(e);
