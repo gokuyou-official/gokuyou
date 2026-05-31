@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>私の軌跡 | 夢の軌跡を、ここに。</title>
+<title>軌跡 | 夢の軌跡を、ここに。</title>
 
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-8990S70XB8"></script>
@@ -14,9 +14,13 @@
   gtag('config', 'G-8990S70XB8');
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/gokuyou/js/config.js"></script>
+<script src="/gokuyou/js/supabase-client.js"></script>
+
 <!-- OGP -->
 <meta name="description" content="あなたが夢に向けて歩んだ日々の記録。">
-<meta property="og:title" content="私の軌跡 | 夢の軌跡を、ここに。">
+<meta property="og:title" content="軌跡 | 夢の軌跡を、ここに。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://gokuyou-official.github.io/gokuyou/log">
 <meta property="og:site_name" content="夢の軌跡を、ここに。">
@@ -454,6 +458,9 @@
     .release-btn-wrap { padding: 32px 48px 16px; }
   }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/gokuyou/js/config.js"></script>
+<script src="/gokuyou/js/supabase-client.js"></script>
 </head>
 <body>
 
@@ -466,8 +473,10 @@
   <nav class="sidebar-nav">
     <a href="./" class="sidebar-link">🏠 ホーム</a>
     <a href="./gokuyou_kingen" class="sidebar-link">📜 敗北者の金言</a>
-    <a href="./log" class="sidebar-link active">📖 私の軌跡</a>
+    <a href="./log" class="sidebar-link active">📖 軌跡</a>
     <a href="https://docs.google.com/forms/d/1aVv1NRdbYKnbLiW2dkTLZzEBKwCO_7a4DnQOUguxZ2s/viewform" class="sidebar-link sidebar-link-cta">🌟 記録を始める</a>
+    <a href="/gokuyou/pages/calendar.html" class="sidebar-link">📅 カレンダー</a>
+    <a id="nav-auth-link" href="/gokuyou/pages/login.html" class="sidebar-link">ログイン</a>
   </nav>
 </aside>
 
@@ -476,7 +485,7 @@
 <!-- HEADER -->
 <header class="page-header">
   <a href="./" class="page-header-back">←</a>
-  <h1 class="page-header-title">私の軌跡</h1>
+  <h1 class="page-header-title">軌跡</h1>
 </header>
 
 <!-- 軌跡ログ -->
@@ -530,6 +539,10 @@
     <span class="nav-icon">📜</span>
     <span class="nav-label">金言</span>
   </a>
+  <a href="/gokuyou/pages/calendar.html" class="nav-item">
+    <span class="nav-icon">📅</span>
+    <span class="nav-label">カレンダー</span>
+  </a>
 </nav>
 
 </div><!-- /main-content -->
@@ -569,7 +582,7 @@
 
 <script>
 // ===== localStorage =====
-function getLogs() {
+function getLocalLogs() {
   return JSON.parse(localStorage.getItem('gokuyou_logs') || '[]');
 }
 function getMemorials() {
@@ -580,10 +593,10 @@ function saveMemorials(m) {
 }
 
 // ===== 軌跡一覧レンダリング =====
-function renderLogs() {
-  var logs = getLogs().slice().reverse();
+function renderLogsFromData(logs) {
   var list = document.getElementById('log-list');
   var empty = document.getElementById('log-empty');
+  list.innerHTML = '';
   if (!logs.length) { empty.style.display = ''; return; }
   empty.style.display = 'none';
   logs.forEach(function(l) {
@@ -591,9 +604,37 @@ function renderLogs() {
     item.className = 'log-item';
     item.innerHTML =
       '<div class="log-date">' + l.date + '</div>' +
-      '<div class="log-text">' + escHtml(l.text) + '</div>';
+      '<div class="log-text">' + escHtml(l.text || l.content || '') + '</div>';
     list.appendChild(item);
   });
+}
+
+function renderLogs() {
+  if (window.supabaseClient) {
+    window.supabaseClient.auth.getSession().then(function(result) {
+      var session = result && result.data ? result.data.session : null;
+      if (session) {
+        window.supabaseClient
+          .from('today_steps')
+          .select('date, content')
+          .eq('user_id', session.user.id)
+          .order('created_at', { ascending: false })
+          .then(function(res) {
+            if (res.error || !res.data) {
+              renderLogsFromData(getLocalLogs().slice().reverse());
+            } else {
+              renderLogsFromData(res.data);
+            }
+          });
+      } else {
+        renderLogsFromData(getLocalLogs().slice().reverse());
+      }
+    }).catch(function() {
+      renderLogsFromData(getLocalLogs().slice().reverse());
+    });
+  } else {
+    renderLogsFromData(getLocalLogs().slice().reverse());
+  }
 }
 
 // ===== 供養一覧レンダリング =====

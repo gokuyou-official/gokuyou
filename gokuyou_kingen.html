@@ -14,6 +14,10 @@
   gtag('config', 'G-8990S70XB8');
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/gokuyou/js/config.js"></script>
+<script src="/gokuyou/js/supabase-client.js"></script>
+
 <!-- OGP -->
 <meta name="description" content="夢を諦めた人だけが語れる、本物の言葉がある。成功者じゃない、だからこそリアルな言葉。敗北者の金言。">
 <meta property="og:title" content="敗北者の金言 | 夢の軌跡を、ここに。">
@@ -650,6 +654,7 @@
   }
   .share-tw { background: #000; color: #fff; }
   .share-line { background: #06C755; color: #fff; }
+  .share-mypage { background: var(--primary-bg); color: var(--primary); text-decoration: none; }
 
   /* ========== PC LAYOUT ========== */
   .pc-sidebar { display: none; }
@@ -746,6 +751,9 @@
     }
   }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/gokuyou/js/config.js"></script>
+<script src="/gokuyou/js/supabase-client.js"></script>
 </head>
 <body>
 
@@ -759,6 +767,8 @@
     <a href="./" class="sidebar-link">🏠 ホーム</a>
     <a href="./gokuyou_kingen" class="sidebar-link active">📜 敗北者の金言</a>
     <a href="/gokuyou/log" class="sidebar-link sidebar-link-cta">🌟 記録を始める</a>
+    <a href="/gokuyou/pages/calendar.html" class="sidebar-link">📅 カレンダー</a>
+    <a id="nav-auth-link" href="/gokuyou/pages/login.html" class="sidebar-link">ログイン</a>
   </nav>
 </aside>
 
@@ -1123,31 +1133,6 @@
       </div>
     </div>
 
-    <!-- けい -->
-    <div class="kingen-card">
-      <div class="kingen-card-top">
-        <div class="kingen-mark">"</div>
-        <span class="kingen-career-badge">Others｜その他</span>
-      </div>
-      <p class="kingen-context">旅系YouTuberを目指していたが、そこまで本気ではなかった話。</p>
-      <p class="kingen-quote-text">「やってみたけど、続かなかっただけです。」</p>
-      <div class="kingen-mini-qa">旅の動画を撮ってYouTubeに上げてみたものの、編集が思ったより大変で、再生数もほとんど伸びなくて、気づいたら更新が止まっていました。嫌になったわけでもなく、誰かに否定されたわけでもありません。ただ、仕事や友達との予定の方が自然と優先になっていきました。やってみて、続かなかった。それだけの話です。</div>
-      <div class="kingen-yume-message">
-        <span class="kingen-yume-label">夢を追うあなたへ</span>
-        動画やめてから、旅がもっと楽しくなった。撮らなくていいって、こんなに楽なんだと思った。
-      </div>
-      <div class="kingen-footer">
-        <div class="kingen-author-info">
-          <p class="kingen-author-name">けい</p>
-          <p class="kingen-author-now">31歳 / 現在 会社員</p>
-        </div>
-      </div>
-      <div class="share-btns">
-        <button class="share-btn share-tw" onclick="shareTwitter('やってみたけど、続かなかっただけです。')">𝕏 シェア</button>
-        <button class="share-btn share-line" onclick="shareLine('やってみたけど、続かなかっただけです。')">LINE</button>
-      </div>
-    </div>
-
     <!-- yoshi_comedy -->
     <div class="kingen-card">
       <div class="kingen-card-top">
@@ -1193,17 +1178,21 @@
 
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav">
-  <a href="./" class="nav-item">
+  <a href="/gokuyou/" class="nav-item">
     <span class="nav-icon">🏠</span>
     <span class="nav-label">ホーム</span>
   </a>
-  <a href="./log" class="nav-item">
+  <a href="/gokuyou/log" class="nav-item">
     <span class="nav-icon">📖</span>
     <span class="nav-label">軌跡</span>
   </a>
-  <a href="./gokuyou_kingen" class="nav-item active">
+  <a href="/gokuyou/gokuyou_kingen" class="nav-item active">
     <span class="nav-icon">📜</span>
     <span class="nav-label">金言</span>
+  </a>
+  <a href="/gokuyou/pages/calendar.html" class="nav-item">
+    <span class="nav-icon">📅</span>
+    <span class="nav-label">カレンダー</span>
   </a>
 </nav>
 
@@ -1253,6 +1242,7 @@ function shareLine(quote) {
       '<div class="share-btns">' +
         '<button class="share-btn share-tw" onclick="shareTwitter(\'' + shareText + '\')">𝕏 シェア</button>' +
         '<button class="share-btn share-line" onclick="shareLine(\'' + shareText + '\')">LINE</button>' +
+        '<a href="/gokuyou/pages/profile.html" class="share-btn share-mypage">マイページへ</a>' +
       '</div>';
     return el;
   }
@@ -1325,6 +1315,18 @@ function shareLine(quote) {
     });
   });
 })();
+
+// Add マイページへ button to all hardcoded kingen cards
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.kingen-card .share-btns').forEach(function (btns) {
+    if (btns.querySelector('.share-mypage')) return;
+    var a = document.createElement('a');
+    a.href = '/gokuyou/pages/profile.html';
+    a.className = 'share-btn share-mypage';
+    a.textContent = 'マイページへ';
+    btns.appendChild(a);
+  });
+});
 </script>
 
 </body>

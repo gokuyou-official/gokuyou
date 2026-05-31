@@ -14,6 +14,10 @@
   gtag('config', 'G-8990S70XB8');
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/gokuyou/js/config.js"></script>
+<script src="/gokuyou/js/supabase-client.js"></script>
+
 <!-- OGP -->
 <meta name="description" content="夢を追い続けた時間は、消えない。挑戦した人の軌跡を記録し、諦めた日も含めて本物の記録を残すサービス。">
 <meta property="og:title" content="夢の軌跡を、ここに。">
@@ -155,6 +159,22 @@
     border-radius: 10px;
     text-decoration: none;
     letter-spacing: 0.05em;
+  }
+  .hero-auth-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.65);
+    text-decoration: none;
+    margin-top: 14px;
+    letter-spacing: 0.03em;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-auth-link:hover {
+    color: rgba(255,255,255,0.9);
   }
 
   /* ========== STATS ========== */
@@ -339,7 +359,13 @@
     font-weight: 700;
   }
 
-  .cal-day.empty { opacity: 0; }
+  .cal-day.empty { opacity: 0; pointer-events: none; }
+  .cal-day:not(.empty) { cursor: pointer; }
+  .cal-day.is-selected {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+    border-radius: 8px;
+  }
 
   .cal-legend {
     display: flex;
@@ -363,7 +389,40 @@
   .dot-today { background: var(--primary); }
   .dot-mile { background: var(--accent-light); border: 1.5px solid var(--accent); }
 
-  /* ========== MEMBERS ========== */
+  /* ========== TOP CAL TABS ========== */
+  .top-cal-tabs {
+    display: flex;
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 3px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border);
+    gap: 2px;
+  }
+  .top-cal-tab {
+    flex: 1;
+    padding: 8px 6px;
+    border: none;
+    border-radius: 7px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    background: transparent;
+    color: var(--text3);
+    letter-spacing: 0.02em;
+  }
+  .top-cal-tab.active {
+    background: var(--white);
+    color: var(--primary);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .top-cal-desc {
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 12px;
+    letter-spacing: 0.02em;
+  }
   .member-list {
     display: flex;
     flex-direction: column;
@@ -631,7 +690,7 @@
     backdrop-filter: blur(12px);
     border-top: 1px solid var(--border);
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     padding: 8px 0 18px;
     z-index: 100;
     box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
@@ -819,7 +878,78 @@
     font-size: 13px;
     color: #888;
   }
+
+  /* ========== EVENT MODAL ========== */
+  .ev-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.48);
+    z-index: 999;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .ev-modal-overlay.open { display: flex; }
+  .ev-modal {
+    background: var(--white);
+    border-radius: 20px 20px 0 0;
+    padding: 20px 20px 40px;
+    width: 100%;
+    max-width: 430px;
+    max-height: 78vh;
+    overflow-y: auto;
+  }
+  .ev-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .ev-modal-date {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.1em;
+  }
+  .ev-modal-close {
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: var(--text3);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 2px;
+  }
+  .ev-modal-item {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .ev-modal-item:last-child { border-bottom: none; }
+  .ev-modal-title { font-size: 16px; font-weight: 800; color: var(--text); margin-bottom: 8px; line-height: 1.4; }
+  .ev-modal-meta { font-size: 12px; color: var(--text2); margin-bottom: 6px; line-height: 1.8; }
+  .ev-modal-author { font-size: 12px; color: var(--text3); margin-bottom: 8px; }
+  .ev-modal-desc { font-size: 13px; color: var(--text2); line-height: 1.7; margin-bottom: 10px; }
+  .ev-modal-link {
+    display: inline-block;
+    padding: 8px 16px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .ev-modal-empty {
+    text-align: center;
+    padding: 24px 0;
+    color: var(--text3);
+    font-size: 13px;
+    line-height: 1.8;
+  }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/gokuyou/js/config.js"></script>
+<script src="/gokuyou/js/supabase-client.js"></script>
 </head>
 <body>
 
@@ -832,7 +962,9 @@
   <nav class="sidebar-nav">
     <a href="./" class="sidebar-link active">🏠 ホーム</a>
     <a href="./gokuyou_kingen" class="sidebar-link">📜 敗北者の金言</a>
-    <a href="./log" class="sidebar-link">📖 私の軌跡</a>
+    <a href="./log" class="sidebar-link">📖 軌跡</a>
+    <a href="/gokuyou/pages/calendar.html" class="sidebar-link">📅 カレンダー</a>
+    <a id="nav-auth-link" href="/gokuyou/pages/login.html" class="sidebar-link">ログイン</a>
   </nav>
 </aside>
 
@@ -846,8 +978,9 @@
   <p class="hero-desc">挑戦した時間は、消えない。<br>諦めた日も含めて、あなたの本物の記録。</p>
   <div class="hero-btns">
     <a href="#today-step" class="btn-primary">✏️ 今日の一歩を記録する</a>
-    <a class='btn-outline' href='./gokuyou_kingen'>📖 先輩たちの言葉を読む</a>
+    <a class='btn-outline' href='./gokuyou_kingen'>📖 敗北者の金言を読む</a>
   </div>
+  <a id="hero-auth-link" href="/gokuyou/pages/login.html" class="hero-auth-link">👤 ログイン / マイページ</a>
 </section>
 
 <!-- STATS -->
@@ -885,8 +1018,51 @@
     <textarea class="step-textarea" id="step-input" placeholder="今日、夢に向けて何をした？（一言でOK）"></textarea>
     <button class="step-save-btn" onclick="saveStep()">記録する</button>
     <div class="step-saved-msg" id="step-saved">今日の一歩を受け取りました</div>
+    <div id="step-login-msg" style="display:none; margin-top:8px; font-size:13px; color:#666677; line-height:1.6;">記録するには<a href="/gokuyou/pages/login.html" style="color:#FF6B35; font-weight:700;">ログイン</a>が必要です</div>
     <a href="./log" class="step-log-link">これまでの記録を見る →</a>
   </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- EVENT CALENDAR PREVIEW -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-title">
+      <span class="section-title-icon">📅</span>
+      カレンダー
+    </span>
+    <a href="/gokuyou/pages/calendar.html" class="section-link">すべて見る →</a>
+  </div>
+
+  <!-- タブ切り替え -->
+  <div class="top-cal-tabs">
+    <button class="top-cal-tab active" id="top-tab-event" onclick="switchTopTab('event')">📅 イベントシェア</button>
+    <button class="top-cal-tab" id="top-tab-my" onclick="switchTopTab('my')">📖 マイカレンダー</button>
+  </div>
+
+  <!-- タブ説明文 -->
+  <p class="top-cal-desc" id="top-cal-desc">夢追い人たちの本番・活動予定をシェア</p>
+
+  <!-- 月間カレンダーグリッド -->
+  <div class="cal-wrap">
+    <p class="cal-month" id="top-cal-month"></p>
+    <div class="cal-grid" id="top-cal-grid">
+      <div class="cal-day-label">日</div>
+      <div class="cal-day-label">月</div>
+      <div class="cal-day-label">火</div>
+      <div class="cal-day-label">水</div>
+      <div class="cal-day-label">木</div>
+      <div class="cal-day-label">金</div>
+      <div class="cal-day-label">土</div>
+    </div>
+    <div class="cal-legend">
+      <div class="legend-item"><div class="legend-dot dot-event"></div>イベントあり</div>
+      <div class="legend-item"><div class="legend-dot dot-today"></div>今日</div>
+    </div>
+  </div>
+
+  <p style="font-size:11px;color:var(--text3);text-align:center;margin-top:10px;">日付をタップするとイベント詳細を表示</p>
 </section>
 
 <div class="divider"></div>
@@ -896,7 +1072,7 @@
   <div class="section-header">
     <span class="section-title">
       <span class="section-title-icon">📜</span>
-      先輩たちの言葉
+      敗北者の金言
     </span>
     <a class='section-link' href='./gokuyou_kingen'>すべて見る →</a>
   </div>
@@ -944,57 +1120,6 @@
   </div>
 </section>
 
-<div class="divider"></div>
-
-<!-- CALENDAR -->
-<section class="section">
-  <div class="section-header">
-    <span class="section-title">
-      <span class="section-title-icon">📅</span>
-      私の活動カレンダー
-    </span>
-    <a href="./log" class="section-link">軌跡を見る →</a>
-  </div>
-  <div class="cal-wrap">
-    <p class="cal-month" id="cal-month"></p>
-    <div class="cal-grid" id="cal-grid">
-      <div class="cal-day-label">日</div>
-      <div class="cal-day-label">月</div>
-      <div class="cal-day-label">火</div>
-      <div class="cal-day-label">水</div>
-      <div class="cal-day-label">木</div>
-      <div class="cal-day-label">金</div>
-      <div class="cal-day-label">土</div>
-    </div>
-    <div class="cal-legend">
-      <div class="legend-item"><div class="legend-dot dot-event"></div>記録あり</div>
-      <div class="legend-item"><div class="legend-dot dot-today"></div>今日</div>
-      <div class="legend-item"><div class="legend-dot dot-mile"></div>供養した日</div>
-    </div>
-  </div>
-</section>
-
-<div class="divider"></div>
-
-<!-- LATEST ARTICLE -->
-<section class="section">
-  <div class="section-header">
-    <span class="section-title">
-      <span class="section-title-icon">📰</span>
-      最新記事
-    </span>
-  </div>
-  <a href="https://gokuyou-official.github.io/gokuyou/gokuyou_kingen" class="article-card">
-    <div class="article-icon">📜</div>
-    <div class="article-info">
-      <p class="article-label">WORDS OF THE DEFEATED</p>
-      <p class="article-title">敗北者の金言</p>
-      <p class="article-desc">夢を諦めた人だけが語れる、本物の言葉がある。</p>
-    </div>
-    <span class="article-arrow">›</span>
-  </a>
-</section>
-
 <!-- CONCEPT -->
 <div class="concept">
   <p class="concept-label">CONCEPT</p>
@@ -1008,15 +1133,19 @@
   <div class="howto-steps">
     <div class="howto-step">
       <span class="howto-number">01</span>
-      <p class="howto-text">今日の夢への一歩を記録する<br><span class="howto-sub">練習でも、悩んだ日でも、なんでもいい</span></p>
+      <p class="howto-text">今日の夢への一歩を記録する<br><span class="howto-sub">練習でも、悩んだ日でも、一言から記録できます。</span></p>
     </div>
     <div class="howto-step">
       <span class="howto-number">02</span>
-      <p class="howto-text">軌跡がカレンダーに積み上がっていく<br><span class="howto-sub">続けた日が、自分の証明になる</span></p>
+      <p class="howto-text">軌跡がカレンダーに積み上がっていく<br><span class="howto-sub">続けた日がカレンダーに積み上がり、あなたの証明になります。</span></p>
     </div>
     <div class="howto-step">
       <span class="howto-number">03</span>
-      <p class="howto-text">仲間の一歩を見て、応援する<br><span class="howto-sub">追いかけてる人も、諦めた人も、ここにいる</span></p>
+      <p class="howto-text">自分の挑戦をシェアする<br><span class="howto-sub">イベントカレンダーで活動を公開し、応援してもらえます。</span></p>
+    </div>
+    <div class="howto-step">
+      <span class="howto-number">04</span>
+      <p class="howto-text">仲間の一歩を見て、応援する<br><span class="howto-sub">夢を追う仲間の一歩を見て、応援することができます。</span></p>
     </div>
   </div>
 </section>
@@ -1040,11 +1169,30 @@
     <span class="nav-icon">📜</span>
     <span class="nav-label">金言</span>
   </a>
+  <a href="/gokuyou/pages/calendar.html" class="nav-item">
+    <span class="nav-icon">📅</span>
+    <span class="nav-label">カレンダー</span>
+  </a>
 </nav>
 
 </div><!-- /main-content -->
 
+<!-- EVENT MODAL -->
+<div class="ev-modal-overlay" id="ev-modal-overlay" onclick="onEvModalOverlayClick(event)">
+  <div class="ev-modal" id="ev-modal">
+    <div class="ev-modal-header">
+      <span class="ev-modal-date" id="ev-modal-date"></span>
+      <button class="ev-modal-close" onclick="closeEvModal()">×</button>
+    </div>
+    <div id="ev-modal-body"></div>
+  </div>
+</div>
+
 <script>
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function shareTwitter(quote) {
   var text = encodeURIComponent('「' + quote + '」 #御供養');
   var url = encodeURIComponent('https://gokuyou-official.github.io/gokuyou/gokuyou_kingen');
@@ -1053,6 +1201,157 @@ function shareTwitter(quote) {
 function shareLine(quote) {
   var text = encodeURIComponent('「' + quote + '」\n./gokuyou_kingen');
   window.open('https://line.me/R/msg/text/?' + text, '_blank', 'noopener');
+}
+
+// ===== トップ カレンダー =====
+var topCalTab = 'event';
+var topCalEventDates = new Set();
+var allTopCalEvents = [];
+var topCalSelectedDate = null;
+
+function switchTopTab(tab) {
+  topCalTab = tab;
+  topCalSelectedDate = null;
+  var isEvent = tab === 'event';
+  document.getElementById('top-tab-event').classList.toggle('active', isEvent);
+  document.getElementById('top-tab-my').classList.toggle('active', !isEvent);
+  document.getElementById('top-cal-desc').textContent = isEvent
+    ? '夢追い人たちの本番・活動イベントをシェア'
+    : '今日の一歩の記録をカレンダーで確認';
+  renderTopCalendar(isEvent ? topCalEventDates : null);
+}
+
+function renderTopCalendar(highlightDates) {
+  var now = new Date();
+  var year = now.getFullYear();
+  var month = now.getMonth();
+  var today = now.getDate();
+  document.getElementById('top-cal-month').textContent = year + '年 ' + (month + 1) + '月';
+
+  var dates = highlightDates || (function() {
+    var logs = getLogs();
+    return new Set(logs.map(function(l) { return l.date; }));
+  })();
+
+  var grid = document.getElementById('top-cal-grid');
+  var labels = Array.from(grid.querySelectorAll('.cal-day-label'));
+  grid.innerHTML = '';
+  labels.forEach(function(l) { grid.appendChild(l); });
+
+  var firstDay = new Date(year, month, 1).getDay();
+  var daysInMonth = new Date(year, month + 1, 0).getDate();
+  for (var i = 0; i < firstDay; i++) {
+    var empty = document.createElement('div');
+    empty.className = 'cal-day empty';
+    grid.appendChild(empty);
+  }
+  for (var d = 1; d <= daysInMonth; d++) {
+    var dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+    var el = document.createElement('div');
+    var cls = 'cal-day';
+    if (d === today) cls += ' is-today';
+    else if (dates.has(dateStr)) cls += ' has-event';
+    if (dateStr === topCalSelectedDate) cls += ' is-selected';
+    el.className = cls;
+    el.textContent = d;
+    (function(ds) {
+      el.addEventListener('click', function() { onTopCalDayClick(ds); });
+    })(dateStr);
+    grid.appendChild(el);
+  }
+}
+
+function onTopCalDayClick(dateStr) {
+  var now = new Date();
+  var d = new Date(dateStr + 'T00:00:00');
+  var days = ['日','月','火','水','木','金','土'];
+  var dateLabel = (d.getMonth()+1) + '月' + d.getDate() + '日（' + days[d.getDay()] + '）';
+
+  if (topCalTab === 'event') {
+    var events = allTopCalEvents.filter(function(ev) { return ev.event_date === dateStr; });
+    showEvModal(events, dateLabel);
+  } else {
+    var logs = getLogs().filter(function(l) { return l.date === dateStr; });
+    showLogModal(logs, dateLabel);
+  }
+}
+
+// ===== イベントシェアカレンダー プレビュー =====
+function loadCalPreview() {
+  renderTopCalendar(topCalEventDates);
+  if (!window.supabaseClient) return;
+
+  var now = new Date();
+  var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
+  var monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10);
+
+  window.supabaseClient
+    .from('events')
+    .select('*')
+    .gte('event_date', monthStart)
+    .lte('event_date', monthEnd)
+    .order('event_date', { ascending: true })
+    .then(function(result) {
+      if (result && result.error) { console.error(result.error); return; }
+      allTopCalEvents = (result && result.data) ? result.data : [];
+      topCalEventDates = new Set(allTopCalEvents.map(function(ev) { return ev.event_date; }));
+      renderTopCalendar(topCalEventDates);
+    })
+    .catch(function(e) { console.error(e); });
+}
+
+// ===== イベントモーダル =====
+function showEvModal(events, dateLabel) {
+  document.getElementById('ev-modal-date').textContent = dateLabel;
+  var body = document.getElementById('ev-modal-body');
+  if (!events.length) {
+    body.innerHTML = '<div class="ev-modal-empty">この日のイベントはありません</div>';
+  } else {
+    var html = '';
+    events.forEach(function(ev) {
+      var nickname = (ev.profiles && ev.profiles.nickname) ? ev.profiles.nickname : '匿名';
+      var avatar = (ev.profiles && ev.profiles.avatar_emoji) ? ev.profiles.avatar_emoji : '🙂';
+      html += '<div class="ev-modal-item">';
+      html += '<p class="ev-modal-title">' + escHtml(ev.title || '') + '</p>';
+      if (ev.event_time || ev.location) {
+        html += '<p class="ev-modal-meta">';
+        if (ev.event_time) html += '🕐 ' + escHtml(ev.event_time) + '　';
+        if (ev.location) html += '📍 ' + escHtml(ev.location);
+        html += '</p>';
+      }
+      html += '<p class="ev-modal-author">' + avatar + ' ' + escHtml(nickname) + '</p>';
+      if (ev.description) html += '<p class="ev-modal-desc">' + escHtml(ev.description) + '</p>';
+      if (ev.link) html += '<a class="ev-modal-link" href="' + escHtml(ev.link) + '" target="_blank" rel="noopener">🔗 詳細・チケット</a>';
+      html += '</div>';
+    });
+    body.innerHTML = html;
+  }
+  document.getElementById('ev-modal-overlay').classList.add('open');
+}
+
+function showLogModal(logs, dateLabel) {
+  document.getElementById('ev-modal-date').textContent = dateLabel;
+  var body = document.getElementById('ev-modal-body');
+  if (!logs.length) {
+    body.innerHTML = '<div class="ev-modal-empty">この日の記録はありません</div>';
+  } else {
+    var html = '';
+    logs.forEach(function(l) {
+      html += '<div class="ev-modal-item">';
+      html += '<p class="ev-modal-title" style="font-size:13px;font-weight:600;">' + escHtml(l.text || '') + '</p>';
+      html += '</div>';
+    });
+    body.innerHTML = html;
+  }
+  document.getElementById('ev-modal-overlay').classList.add('open');
+}
+
+function closeEvModal() {
+  document.getElementById('ev-modal-overlay').classList.remove('open');
+}
+
+function onEvModalOverlayClick(e) {
+  if (e.target === document.getElementById('ev-modal-overlay')) closeEvModal();
 }
 
 // ===== カレンダー =====
@@ -1122,22 +1421,92 @@ function getStreak() {
   }
   return streak;
 }
+
+// ローカルデータをSupabaseに移行する
+function migrateLocalToSupabase(userId) {
+  var logs = getLogs();
+  if (!logs.length) return;
+  var rows = logs.map(function(l) {
+    return { user_id: userId, date: l.date, content: l.text, genre: null };
+  });
+  window.supabaseClient
+    .from('today_steps')
+    .insert(rows)
+    .then(function(res) {
+      if (!res.error) {
+        localStorage.removeItem('gokuyou_logs');
+      }
+    });
+}
+
 function saveStep() {
   var text = document.getElementById('step-input').value.trim();
   if (!text) return;
+  var loginMsg = document.getElementById('step-login-msg');
+
+  if (window.supabaseClient) {
+    window.supabaseClient.auth.getSession().then(function(result) {
+      var session = result && result.data ? result.data.session : null;
+      if (!session) {
+        // 未ログイン：localStorageに保存
+        loginMsg.style.display = '';
+        setTimeout(function() { loginMsg.style.display = 'none'; }, 4000);
+        doSaveStepLocal(text);
+        return;
+      }
+      loginMsg.style.display = 'none';
+      doSaveStepSupabase(text, session.user.id);
+    }).catch(function() {
+      doSaveStepLocal(text);
+    });
+  } else {
+    doSaveStepLocal(text);
+  }
+}
+
+function doSaveStepLocal(text) {
   var logs = getLogs();
   var today = new Date().toISOString().slice(0, 10);
   logs.push({ date: today, text: text });
   saveLogs(logs);
+  onStepSaved();
+}
+
+function doSaveStepSupabase(text, userId) {
+  var today = new Date().toISOString().slice(0, 10);
+  window.supabaseClient
+    .from('today_steps')
+    .insert({ user_id: userId, date: today, content: text, genre: null })
+    .then(function(res) {
+      if (res.error) {
+        doSaveStepLocal(text);
+      } else {
+        onStepSaved();
+      }
+    });
+}
+
+function onStepSaved() {
   document.getElementById('step-input').value = '';
   var msg = document.getElementById('step-saved');
   msg.classList.add('show');
   setTimeout(function() { msg.classList.remove('show'); }, 2000);
   document.getElementById('streak-num').textContent = getStreak();
 }
+
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('streak-num').textContent = getStreak();
-  renderCalendar();
+  loadCalPreview();
+
+  // ログイン済みかつlocalStorageにデータがあれば移行
+  if (window.supabaseClient) {
+    window.supabaseClient.auth.getSession().then(function(result) {
+      var session = result && result.data ? result.data.session : null;
+      if (session && getLogs().length > 0) {
+        migrateLocalToSupabase(session.user.id);
+      }
+    });
+  }
 });
 </script>
 
