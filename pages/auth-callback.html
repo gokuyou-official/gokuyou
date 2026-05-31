@@ -121,12 +121,30 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function handleSuccess() {
-    window.location.href = '/gokuyou/pages/profile.html';
+    msg.textContent = 'ログインしました！';
+    sub.textContent = 'トップページへ移動します...';
+    spinner.style.display = 'none';
+    setTimeout(function () {
+      window.location.href = '/gokuyou/';
+    }, 1000);
   }
 
-  // ハッシュに access_token が含まれる場合（implicit flow）は getSession で確認
   var hash = window.location.hash || '';
-  if (hash.indexOf('access_token') !== -1) {
+  var search = window.location.search || '';
+
+  if (search.indexOf('code=') !== -1) {
+    window.supabaseClient.auth.exchangeCodeForSession(window.location.href)
+      .then(function (result) {
+        if (result && result.error) {
+          handleError(result.error);
+        } else if (result && result.data && result.data.session) {
+          handleSuccess();
+        } else {
+          handleError(new Error('No session'));
+        }
+      })
+      .catch(handleError);
+  } else if (hash.indexOf('access_token') !== -1) {
     window.supabaseClient.auth.getSession()
       .then(function (result) {
         if (result && result.data && result.data.session) {
@@ -137,13 +155,12 @@ document.addEventListener('DOMContentLoaded', function () {
       })
       .catch(handleError);
   } else {
-    // PKCE flow: code が query param に含まれる
-    window.supabaseClient.auth.exchangeCodeForSession(window.location.search)
+    window.supabaseClient.auth.getSession()
       .then(function (result) {
-        if (result && result.error) {
-          handleError(result.error);
-        } else {
+        if (result && result.data && result.data.session) {
           handleSuccess();
+        } else {
+          handleError(new Error('No auth params'));
         }
       })
       .catch(handleError);
