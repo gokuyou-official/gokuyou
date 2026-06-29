@@ -45,19 +45,28 @@ def select_tweet(data: dict, slot: int) -> str:
 
 
 def post_tweet(text: str) -> None:
+    # 認証情報の存在確認
+    keys = ["TWITTER_API_KEY", "TWITTER_API_SECRET", "TWITTER_ACCESS_TOKEN", "TWITTER_ACCESS_TOKEN_SECRET"]
+    for k in keys:
+        v = os.environ.get(k, "")
+        print(f"{k}: {'SET (' + str(len(v)) + ' chars)' if v else 'MISSING'}")
+
     auth = OAuth1(
         os.environ["TWITTER_API_KEY"],
         os.environ["TWITTER_API_SECRET"],
         os.environ["TWITTER_ACCESS_TOKEN"],
         os.environ["TWITTER_ACCESS_TOKEN_SECRET"],
     )
+    print(f"投稿テキスト ({len(text)} chars):\n{text[:100]}...")
     response = requests.post(TWEET_URL, auth=auth, json={"text": text})
+    print(f"HTTP {response.status_code}")
+    print(f"Response: {response.text}")
     if not response.ok:
-        print(f"エラー: {response.status_code} {response.text}")
-        response.raise_for_status()
+        # GitHub Actions Annotation にエラーを表示
+        print(f"::error::Twitter API Error {response.status_code}: {response.text}")
+        sys.exit(1)
     data = response.json()
     print(f"投稿成功: tweet_id={data['data']['id']}")
-    print(f"内容:\n{text}")
 
 
 def main() -> None:
