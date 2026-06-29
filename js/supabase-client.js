@@ -52,6 +52,11 @@
         window.supabaseClient.auth.getSession().then(function (result) {
           var session = result && result.data ? result.data.session : null;
 
+          // 管理者フラグ設定（GA4フィルター用）
+          if (session && session.user && session.user.email === 'sk19880328@gmail.com') {
+            localStorage.setItem('gokuyou-admin', '1');
+          }
+
           // サイドバーのナビリンク（navLinkは<a>要素のため入れ子にならないよう直接設定）
           var navLink = document.getElementById('nav-auth-link');
           if (navLink) {
