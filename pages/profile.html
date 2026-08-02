@@ -497,6 +497,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var currentUserId = null;
   var currentData = null;
   var hasExistingProfile = false;
+  var timedOut = false;
 
   // 絵文字ピッカーの初期化
   document.querySelectorAll('.emoji-btn').forEach(function(btn) {
@@ -589,12 +590,22 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function loadProfile() {
+    timedOut = false;
+    var timeoutId = setTimeout(function() {
+      timedOut = true;
+      loadingEl.innerHTML =
+        '<p style="color:var(--text3);font-size:13px;margin-bottom:14px;">読み込みがタイムアウトしました。</p>' +
+        '<button onclick="location.reload()" style="padding:10px 20px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">再読み込み</button>';
+    }, 10000);
+
     return window.supabaseClient
       .from('profiles')
       .select('*')
       .eq('id', currentUserId)
       .maybeSingle()
       .then(function (result) {
+        clearTimeout(timeoutId);
+        if (timedOut) return;
         if (result && result.error && result.error.code !== 'PGRST116') {
           console.error(result.error);
         }
@@ -613,6 +624,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       })
       .catch(function (e) {
+        clearTimeout(timeoutId);
+        if (timedOut) return;
         console.error(e);
         currentData = {};
         hasExistingProfile = false;
@@ -626,7 +639,18 @@ document.addEventListener('DOMContentLoaded', function () {
     return;
   }
 
+  var sessionTimedOut = false;
+  var sessionTimeoutId = setTimeout(function () {
+    sessionTimedOut = true;
+    loadingEl.innerHTML =
+      '<p style="color:var(--text3);font-size:13px;margin-bottom:14px;">読み込みがタイムアウトしました。</p>' +
+      '<button onclick="location.reload()" style="padding:10px 20px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">再読み込み</button>';
+  }, 10000);
+
   window.gAuth.getSession().then(function (session) {
+    clearTimeout(sessionTimeoutId);
+    if (sessionTimedOut) return;
+
     if (!session) {
       window.location.href = '/gokuyou/pages/login.html';
       return;
@@ -637,9 +661,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     loadProfile().then(function () {
+      if (timedOut) return;
       loadingEl.style.display = 'none';
     });
   }).catch(function (e) {
+    clearTimeout(sessionTimeoutId);
+    if (sessionTimedOut) return;
     console.error(e);
     window.location.href = '/gokuyou/pages/login.html';
   });
