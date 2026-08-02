@@ -589,12 +589,22 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function loadProfile() {
+    var timedOut = false;
+    var timeoutId = setTimeout(function() {
+      timedOut = true;
+      loadingEl.innerHTML =
+        '<p style="color:var(--text3);font-size:13px;margin-bottom:14px;">読み込みがタイムアウトしました。</p>' +
+        '<button onclick="location.reload()" style="padding:10px 20px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">再読み込み</button>';
+    }, 10000);
+
     return window.supabaseClient
       .from('profiles')
       .select('*')
       .eq('id', currentUserId)
       .maybeSingle()
       .then(function (result) {
+        clearTimeout(timeoutId);
+        if (timedOut) return;
         if (result && result.error && result.error.code !== 'PGRST116') {
           console.error(result.error);
         }
@@ -613,6 +623,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       })
       .catch(function (e) {
+        clearTimeout(timeoutId);
+        if (timedOut) return;
         console.error(e);
         currentData = {};
         hasExistingProfile = false;

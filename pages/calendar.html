@@ -979,11 +979,23 @@ function loadEvents() {
   var listEl = document.getElementById('cal-list');
   listEl.innerHTML = '<p class="cal-loading">読み込み中...</p>';
 
+  var timedOut = false;
+  var timeoutId = setTimeout(function() {
+    timedOut = true;
+    listEl.innerHTML =
+      '<div style="text-align:center;padding:40px 0;">' +
+        '<p style="color:var(--text3);font-size:13px;margin-bottom:14px;">読み込みがタイムアウトしました。</p>' +
+        '<button onclick="loadEvents()" style="padding:10px 20px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">再読み込み</button>' +
+      '</div>';
+  }, 10000);
+
   window.supabaseClient
     .from('events')
     .select('*')
     .order('event_date', { ascending: true })
     .then(function (result) {
+      clearTimeout(timeoutId);
+      if (timedOut) return;
       if (result.error) {
         console.error(result.error);
         var msg = result.error.message || result.error.code || '';
@@ -998,6 +1010,8 @@ function loadEvents() {
       renderList();
     })
     .catch(function (e) {
+      clearTimeout(timeoutId);
+      if (timedOut) return;
       console.error(e);
       listEl.innerHTML = '<p class="cal-empty" style="color:var(--error);">エラー: ' + escHtml(String(e.message || e)) + '</p>';
     });
