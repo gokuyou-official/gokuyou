@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>相方からAI方に変えてみた 第1回「半年、売上ゼロでした」｜夢の軌跡を、ここに。</title>
+<!-- Google Analytics -->
+<script>
+  if (localStorage.getItem('gokuyou-admin') === '1') {
+    window['ga-disable-G-8990S70XB8'] = true;
+  }
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8990S70XB8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-8990S70XB8');
+</script>
+<!-- OGP -->
+<meta name="description" content="元芸人が、相方の代わりにAIと組んでみた。半年で4つのプロダクトを作り、売上はゼロ。うまくいかなかった日も含めて記録する連載の第1回。">
+<meta property="og:title" content="相方からAI方に変えてみた 第1回「半年、売上ゼロでした」">
+<meta property="og:description" content="元芸人が、相方の代わりにAIと組んでみた。半年で4つのプロダクトを作り、売上はゼロ。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://gokuyou-official.github.io/gokuyou/pages/aikata-01.html">
+<meta property="og:image" content="https://gokuyou-official.github.io/gokuyou/images/ogp-aikata-01.png">
+<meta property="og:site_name" content="夢の軌跡を、ここに。">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@gokuyou_bot">
+<meta name="twitter:title" content="相方からAI方に変えてみた 第1回「半年、売上ゼロでした」">
+<meta name="twitter:description" content="元芸人が、相方の代わりにAIと組んでみた。半年で4つのプロダクトを作り、売上はゼロ。">
+<meta name="twitter:image" content="https://gokuyou-official.github.io/gokuyou/images/ogp-aikata-01.png">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #FF6B35;
+    --primary-bg: #FFF4EF;
+    --bg: #F7F8FA;
+    --card: #FFFFFF;
+    --text: #3d3d3d;
+    --text2: #666677;
+    --text3: #9999AA;
+    --border: rgba(61,61,61,0.12);
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding-bottom: 96px;
+  }
+  .page-header {
+    background: linear-gradient(135deg, #FF6B35 0%, #FFB347 100%);
+    padding: 44px 24px 36px;
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+  }
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50px; right: -50px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+  }
+  .header-back {
+    color: rgba(255,255,255,0.9);
+    text-decoration: none;
+    font-size: 13px;
+    display: inline-block;
+    margin-bottom: 22px;
+  }
+  .series {
+    font-size: 13px;
+    font-weight: 700;
+    background: rgba(255,255,255,0.2);
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  .page-header h1 {
+    font-size: 25px;
+    line-height: 1.45;
+    font-weight: 800;
+    position: relative;
+  }
+  .meta {
+    margin-top: 14px;
+    font-size: 12px;
+    opacity: 0.9;
+  }
+  article {
+    background: var(--card);
+    margin: -14px 16px 0;
+    border-radius: 18px;
+    padding: 30px 22px 34px;
+    position: relative;
+    border: 1px solid var(--border);
+  }
+  .lead {
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.9;
+    padding-bottom: 26px;
+    margin-bottom: 26px;
+    border-bottom: 1px solid var(--border);
+  }
+  article h2 {
+    font-size: 17px;
+    font-weight: 800;
+    margin: 36px 0 14px;
+    padding-left: 12px;
+    border-left: 4px solid var(--primary);
+    line-height: 1.5;
+  }
+  article p {
+    font-size: 15.5px;
+    line-height: 2;
+    margin-bottom: 18px;
+  }
+  .note {
+    font-size: 12.5px;
+    color: var(--text2);
+  }
+  .callout {
+    background: var(--primary-bg);
+    border-radius: 12px;
+    padding: 18px 18px 4px;
+    margin: 22px 0;
+  }
+  .callout p { font-weight: 700; }
+  .summary {
+    margin-top: 36px;
+    padding-top: 24px;
+    border-top: 1px dashed var(--border);
+  }
+  .summary-title {
+    font-size: 13px;
+    color: var(--primary);
+    font-weight: 800;
+    margin-bottom: 10px;
+  }
+  .next {
+    margin: 24px 16px 0;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 24px 22px;
+  }
+  .next p {
+    font-size: 14.5px;
+    line-height: 1.9;
+    margin-bottom: 16px;
+  }
+  .btn {
+    display: block;
+    text-align: center;
+    background: var(--primary);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 15px;
+    padding: 15px;
+    border-radius: 12px;
+  }
+  .share {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .share button {
+    flex: 1;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .share button:focus-visible, .btn:focus-visible { outline: 3px solid #2D6BE4; outline-offset: 2px; }
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 8px 0 18px;
+    z-index: 100;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px;
+    text-decoration: none;
+  }
+  .nav-icon { font-size: 20px; line-height: 1; }
+  .nav-label { font-size: 9px; color: var(--text3); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <a class="header-back" href="/gokuyou/">← ホームへ戻る</a><br>
+  <span class="series">連載　相方からAI方に変えてみた</span>
+  <h1>第1回<br>半年、売上ゼロでした</h1>
+  <p class="meta">書いた人：元芸人の運営者</p>
+</header>
+
+<article>
+  <p class="lead">僕は元芸人です。<br>相方とのコンビは、もうありません。<br>いま隣にいるのは、AIです。</p>
+
+  <h2>相方を、AIに替えた理由</h2>
+  <p>お笑いの夢は、一度降りました。<br>いまは会社員として働いています。</p>
+  <p>それでも、何かを作りたい気持ちは残っていました。<br>ネタを考えるのと同じで、作るのが好きなんです。</p>
+  <p>問題は、プログラミングがまったくできないこと。<br>夜と休日しか時間がないこと。</p>
+  <p>そこで、相方の代わりにAIと組むことにしました。<br>僕はこれを「AI方（えーあいかた）」と呼んでいます。</p>
+  <p>ネタ出しから設計、実装（実際に動く形にする作業）まで。<br>文句ひとつ言わず、深夜でも付き合ってくれます。</p>
+
+  <h2>半年で作ったもの、稼いだ額</h2>
+  <p>AI方と組んで半年。<br>4つのプロダクトを同時に走らせました。<br>このサイトも、そのひとつです。</p>
+  <div class="callout">
+    <p>売上は、半年でゼロ円でした。</p>
+  </div>
+  <p>正直に言うと、作るのが楽しすぎました。<br>機能を足して、直して、また足して。</p>
+  <p>その間、届けることと売ることを、ずっと後回しにしていました。<br>「まずはユーザーを集めてから」と言いながら、集める作業から逃げていたんです。</p>
+
+  <h2>AI方との、いちばんの事故</h2>
+  <p>ある日、スマホアプリの「ビルド」で大事故を起こしました。<br>ビルドとは、設計図を実際のアプリに組み立てる作業です。</p>
+  <p>これが何度やっても失敗する。<br>原因が分からないまま、とにかく再挑戦を繰り返しました。</p>
+  <p>気づけば12回。<br>無料で使える回数を、きれいに使い切っていました。</p>
+  <p>あとで分かった原因は、部品がひとつ二重に読み込まれていたこと。<br>修正自体は、数行で終わりました。</p>
+  <p>芸人時代なら、相方と大喧嘩していた場面です。<br>でもAI方は怒りません。<br>一緒に反省文を書いてくれました。</p>
+  <p>教訓はシンプルでした。<br>原因を確かめる前に、本番の一発を打つな。<br>漫才でいえば、ネタ合わせせずに単独ライブに出るようなものです。</p>
+
+  <h2>半年で、分かったこと</h2>
+  <p>作るのは、AI方のおかげで驚くほど速くなりました。<br>でも、届けるのは人間の仕事でした。</p>
+  <p>ネタ帳の中のネタは、誰も笑わせません。<br>舞台に立って、初めてウケるかスベるかが分かる。<br>プロダクトも、たぶん同じです。</p>
+
+  <h2>この連載について</h2>
+  <p>この連載では、元芸人とAI方の試行錯誤を記録していきます。<br>うまくいった日も、スベった日も、全部です。</p>
+  <p>このサイトは「諦めた日も含めて、本物の記録を残す」場所です。<br>だったら運営者が、まず自分の記録を出すべきだと思いました。</p>
+
+  <div class="summary">
+    <p class="summary-title">第1回のまとめ</p>
+    <p>AIと組めば、プログラミングができなくても作れる。<br>ただし、作るだけでは1円にもならない。<br>次回からは「届ける」側の記録です。</p>
+  </div>
+</article>
+
+<section class="next">
+  <p>あなたの今日の一歩も、ここに残せます。<br>一言だけでも大丈夫です。</p>
+  <a class="btn" href="/gokuyou/#today-step">✏️ 今日の一歩を記録する</a>
+  <div class="share">
+    <button type="button" onclick="share('x')">𝕏 シェア</button>
+    <button type="button" onclick="share('line')">LINE</button>
+  </div>
+</section>
+
+<nav class="bottom-nav">
+  <a href="/gokuyou/" class="nav-item"><span class="nav-icon">🏠</span><span class="nav-label">ホーム</span></a>
+  <a href="/gokuyou/log" class="nav-item"><span class="nav-icon">📖</span><span class="nav-label">軌跡</span></a>
+  <a href="/gokuyou/gokuyou_kingen" class="nav-item"><span class="nav-icon">📜</span><span class="nav-label">金言</span></a>
+  <a href="/gokuyou/pages/calendar.html" class="nav-item"><span class="nav-icon">📅</span><span class="nav-label">カレンダー</span></a>
+</nav>
+
+<script>
+  function share(type) {
+    var url = 'https://gokuyou-official.github.io/gokuyou/pages/aikata-01.html';
+    var text = '相方からAI方に変えてみた 第1回「半年、売上ゼロでした」';
+    if (type === 'x') {
+      window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url), '_blank', 'noopener');
+    } else {
+      window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(url), '_blank', 'noopener');
+    }
+    if (typeof gtag === 'function') gtag('event', 'share', { method: type, item_id: 'aikata-01' });
+  }
+</script>
+</body>
+</html>
