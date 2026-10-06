@@ -1026,7 +1026,7 @@
     <textarea class="step-textarea" id="step-input" placeholder="今日、夢に向けて何をした？（一言でOK）"></textarea>
     <button class="step-save-btn" onclick="saveStep()">記録する</button>
     <div class="step-saved-msg" id="step-saved">今日の一歩を受け取りました</div>
-    <div id="step-login-msg" style="display:none; margin-top:8px; font-size:13px; color:#666677; line-height:1.6;">記録するには<a href="/gokuyou/pages/login.html" style="color:#FF6B35; font-weight:700;">ログイン</a>が必要です</div>
+    <div id="step-login-msg" style="display:none; margin-top:8px; font-size:13px; color:#666677; line-height:1.6;">このデバイスに保存しました。<a href="/gokuyou/pages/login.html" style="color:#FF6B35; font-weight:700;">ログイン</a>するとどこからでも記録を確認できます。</div>
     <a href="./log" class="step-log-link">これまでの記録を見る →</a>
   </div>
 </section>
@@ -1504,6 +1504,9 @@ function doSaveStepSupabase(text, userId) {
       if (res.error) {
         doSaveStepLocal(text);
       } else {
+        var logs = getLogs();
+        logs.push({ date: today, text: text });
+        saveLogs(logs);
         onStepSaved();
       }
     });
