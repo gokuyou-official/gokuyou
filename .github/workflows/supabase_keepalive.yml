@@ -1,0 +1,27 @@
+name: Supabase Keepalive
+
+# 無料プランのSupabaseは約1週間アクセスがないと自動で一時停止する。
+# 3日ごとに軽い読み取りを1回送り、御供養とやらかしのデータベースが止まらないようにする。
+# ここに書いているのは、もともとサイトで公開されている閲覧用の鍵だけ（秘密の鍵ではない）。
+
+on:
+  schedule:
+    - cron: '17 3 */3 * *'   # 3日ごと JST 12:17
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping 御供養 (fnxzkkzcveujonysoxtp)
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://fnxzkkzcveujonysoxtp.supabase.co/rest/v1/today_steps?select=id&limit=1" \
+            -H "apikey: sb_publishable_DPH-TyxDCj6ynUIyoxdFgg_iNwHsBO8")
+          echo "御供養: HTTP $code"
+      - name: Ping やらかし (vktzbishexpahdmvvwcb)
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://vktzbishexpahdmvvwcb.supabase.co/rest/v1/records?select=id&limit=1" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrdHpiaXNoZXhwYWhkbXZ2d2NiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMjkxODksImV4cCI6MjA5MzgwNTE4OX0.S8gWP0oEd63BYLLqPvmdV0OT9yUpH-locooZsQcVNqs" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrdHpiaXNoZXhwYWhkbXZ2d2NiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMjkxODksImV4cCI6MjA5MzgwNTE4OX0.S8gWP0oEd63BYLLqPvmdV0OT9yUpH-locooZsQcVNqs")
+          echo "やらかし: HTTP $code"
