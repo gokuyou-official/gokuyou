@@ -603,6 +603,28 @@
     transition: opacity 0.3s;
   }
   .step-saved-msg.show { opacity: 1; }
+  .step-share-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0 2px;
+    font-size: 12.5px;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+  .step-share-row input { width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; }
+  .everyone-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .everyone-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    font-size: 14.5px;
+    line-height: 1.7;
+    word-break: break-word;
+  }
+  .everyone-time { display: block; margin-top: 4px; font-size: 11px; color: var(--text3); }
+  .everyone-empty { font-size: 13px; color: var(--text2); }
   .step-log-link {
     display: block;
     text-align: center;
@@ -1024,11 +1046,24 @@
       <span class="step-streak-label">日連続中</span>
     </div>
     <textarea class="step-textarea" id="step-input" placeholder="今日、夢に向けて何をした？（一言でOK）"></textarea>
+    <label class="step-share-row"><input type="checkbox" id="step-share"> 「みんなの今日の一歩」に名前なしで載せる</label>
     <button class="step-save-btn" onclick="saveStep()">記録する</button>
     <div class="step-saved-msg" id="step-saved">今日の一歩を受け取りました</div>
     <div id="step-login-msg" style="display:none; margin-top:8px; font-size:13px; color:#666677; line-height:1.6;">このデバイスに保存しました。<a href="/gokuyou/pages/login.html" style="color:#FF6B35; font-weight:700;">ログイン</a>するとどこからでも記録を確認できます。</div>
     <a href="./log" class="step-log-link">これまでの記録を見る →</a>
   </div>
+</section>
+
+<!-- EVERYONE'S STEPS -->
+<section class="section" id="everyone-steps" style="display:none;">
+  <div class="section-header">
+    <span class="section-title">
+      <span class="section-title-icon">👣</span>
+      みんなの今日の一歩
+    </span>
+  </div>
+  <ul class="everyone-list" id="everyone-list"></ul>
+  <p class="everyone-empty" id="everyone-empty" style="display:none;">まだ誰も載せていません。最初の一歩をどうぞ。</p>
 </section>
 
 <div class="divider"></div>
@@ -1485,9 +1520,54 @@ function migrateLocalToSupabase(userId) {
     });
 }
 
+function shareStepPublic(text) {
+  var box = document.getElementById('step-share');
+  if (!box || !box.checked || !window.supabaseClient) return;
+  window.supabaseClient
+    .from('public_steps')
+    .insert({ content: text.slice(0, 140) })
+    .then(function(res) { if (!res.error) loadEveryoneSteps(); });
+}
+
+function timeAgo(iso) {
+  var diff = (Date.now() - new Date(iso).getTime()) / 60000;
+  if (diff < 1) return 'たった今';
+  if (diff < 60) return Math.floor(diff) + '分前';
+  if (diff < 1440) return Math.floor(diff / 60) + '時間前';
+  return Math.floor(diff / 1440) + '日前';
+}
+
+function loadEveryoneSteps() {
+  if (!window.supabaseClient) return;
+  window.supabaseClient
+    .from('public_steps')
+    .select('content, created_at')
+    .order('created_at', { ascending: false })
+    .limit(10)
+    .then(function(res) {
+      var sec = document.getElementById('everyone-steps');
+      if (res.error) { sec.style.display = 'none'; return; }
+      var list = document.getElementById('everyone-list');
+      list.innerHTML = '';
+      (res.data || []).forEach(function(row) {
+        var li = document.createElement('li');
+        li.className = 'everyone-item';
+        li.textContent = row.content;
+        var t = document.createElement('span');
+        t.className = 'everyone-time';
+        t.textContent = timeAgo(row.created_at);
+        li.appendChild(t);
+        list.appendChild(li);
+      });
+      document.getElementById('everyone-empty').style.display = (res.data && res.data.length) ? 'none' : '';
+      sec.style.display = '';
+    });
+}
+
 function saveStep() {
   var text = document.getElementById('step-input').value.trim();
   if (!text) return;
+  shareStepPublic(text);
   var loginMsg = document.getElementById('step-login-msg');
 
   if (window.supabaseClient) {
@@ -1546,6 +1626,7 @@ function onStepSaved() {
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('streak-num').textContent = getStreak();
   loadCalPreview();
+  loadEveryoneSteps();
 
   // ログイン済みかつlocalStorageにデータがあれば移行
   if (window.supabaseClient) {
