@@ -26,6 +26,6 @@ jobs:
             echo "::notice::$name DNS=${ip:-なし} HTTP=$code curl=$rc"
             if [ "$rc" != "0" ] || [ "$code" -ge 500 ]; then fail=1; fi
           }
-          ping_one "御供養" "fnxzkkzcveujonysoxtp.supabase.co" "/rest/v1/today_steps?select=id&limit=1" "sb_publishable_DPH-TyxDCj6ynUIyoxdFgg_iNwHsBO8"
+          ping_one "御供養" "fnxzkkzcveujonysoxtp.supabase.co" "/rest/v1/public_steps?select=id&limit=1" "sb_publishable_DPH-TyxDCj6ynUIyoxdFgg_iNwHsBO8"
           ping_one "やらかし" "vktzbishexpahdmvvwcb.supabase.co" "/rest/v1/records?select=id&limit=1" "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrdHpiaXNoZXhwYWhkbXZ2d2NiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMjkxODksImV4cCI6MjA5MzgwNTE4OX0.S8gWP0oEd63BYLLqPvmdV0OT9yUpH-locooZsQcVNqs"
           exit $fail
