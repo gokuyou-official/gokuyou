@@ -394,7 +394,8 @@
           resultEl.classList.add('error');
         } else {
           try { localStorage.setItem(STORAGE_KEY, String(Date.now())); } catch (e) {}
-          resultEl.textContent = '投稿を受け付けました。ありがとうございます。';
+          resultEl.innerHTML = '投稿を受け付けました。ありがとうございます。<br><button type="button" id="share-img-btn" style="margin-top:12px;padding:12px 18px;border-radius:10px;border:1px solid #c9a35a;background:#121110;color:#e2c27f;font-weight:700;font-family:inherit;">自分の金言を画像にする</button>';
+          (function (q, t) { document.getElementById('share-img-btn').addEventListener('click', function () { window.shareKingenImage(q, t || ''); }); })(kingen, title);
           resultEl.classList.add('success');
           document.getElementById('kingen-form').reset();
           document.getElementById('cnt-dream').textContent = '0';
@@ -414,5 +415,6 @@
   });
 })();
 </script>
+<script src="/gokuyou/js/share-card.js"></script>
 </body>
 </html>
