@@ -18,10 +18,13 @@ jobs:
           code=$(curl -s -o /dev/null -w "%{http_code}" \
             "https://fnxzkkzcveujonysoxtp.supabase.co/rest/v1/today_steps?select=id&limit=1" \
             -H "apikey: sb_publishable_DPH-TyxDCj6ynUIyoxdFgg_iNwHsBO8")
-          echo "御供養: HTTP $code"
+          echo "::notice::御供養 HTTP $code"
       - name: Ping やらかし (vktzbishexpahdmvvwcb)
         run: |
-          code=$(curl -s -o /dev/null -w "%{http_code}" \
+          set +e
+          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 \
             "https://vktzbishexpahdmvvwcb.supabase.co/rest/v1/records?select=id&limit=1" \
             -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrdHpiaXNoZXhwYWhkbXZ2d2NiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMjkxODksImV4cCI6MjA5MzgwNTE4OX0.S8gWP0oEd63BYLLqPvmdV0OT9yUpH-locooZsQcVNqs" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrdHpiaXNoZXhwYWhkbXZ2d2NiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMjkxODksImV4cCI6MjA5MzgwNTE4OX0.S8gWP0oEd63BYLLqPvmdV0OT9yUpH-locooZsQcVNqs")
-          echo "やらかし: HTTP $code"
+          rc=$?
+          echo "::notice::やらかし HTTP $code (curl exit $rc)"
+          if [ "$rc" != "0" ] || [ "$code" -ge 500 ]; then exit 1; fi
