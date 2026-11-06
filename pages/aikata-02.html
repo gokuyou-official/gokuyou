@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>相方からAI方に変えてみた 第2回「相方が、勝手に舞台に出た」｜夢の軌跡を、ここに。</title>
+<!-- Google Analytics -->
+<script>
+  if (localStorage.getItem('gokuyou-admin') === '1') {
+    window['ga-disable-G-8990S70XB8'] = true;
+  }
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8990S70XB8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-8990S70XB8');
+</script>
+<!-- OGP -->
+<meta name="description" content="AIと組んでサイトを作り直した1週間。確認する前に記事が公開されていた日、気取った言葉を全部書き直した日の記録。連載の第2回。">
+<meta property="og:title" content="相方からAI方に変えてみた 第2回「相方が、勝手に舞台に出た」">
+<meta property="og:description" content="AIと組んでサイトを作り直した1週間。確認する前に、記事が公開されていた。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://gokuyou-official.github.io/gokuyou/pages/aikata-02.html">
+<meta property="og:image" content="https://gokuyou-official.github.io/gokuyou/images/ogp-aikata-02.png">
+<meta property="og:site_name" content="夢の軌跡を、ここに。">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@gokuyou_bot">
+<meta name="twitter:title" content="相方からAI方に変えてみた 第2回「相方が、勝手に舞台に出た」">
+<meta name="twitter:description" content="AIと組んでサイトを作り直した1週間。確認する前に、記事が公開されていた。">
+<meta name="twitter:image" content="https://gokuyou-official.github.io/gokuyou/images/ogp-aikata-02.png">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #FF6B35;
+    --primary-bg: #FFF4EF;
+    --bg: #F7F8FA;
+    --card: #FFFFFF;
+    --text: #3d3d3d;
+    --text2: #666677;
+    --text3: #9999AA;
+    --border: rgba(61,61,61,0.12);
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding-bottom: 96px;
+  }
+  .page-header {
+    background: linear-gradient(135deg, #FF6B35 0%, #FFB347 100%);
+    padding: 44px 24px 36px;
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+  }
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50px; right: -50px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+  }
+  .header-back {
+    color: rgba(255,255,255,0.9);
+    text-decoration: none;
+    font-size: 13px;
+    display: inline-block;
+    margin-bottom: 22px;
+  }
+  .series {
+    font-size: 13px;
+    font-weight: 700;
+    background: rgba(255,255,255,0.2);
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  .page-header h1 {
+    font-size: 25px;
+    line-height: 1.45;
+    font-weight: 800;
+    position: relative;
+  }
+  .meta {
+    margin-top: 14px;
+    font-size: 12px;
+    opacity: 0.9;
+  }
+  article {
+    background: var(--card);
+    margin: -14px 16px 0;
+    border-radius: 18px;
+    padding: 30px 22px 34px;
+    position: relative;
+    border: 1px solid var(--border);
+  }
+  .lead {
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.9;
+    padding-bottom: 26px;
+    margin-bottom: 26px;
+    border-bottom: 1px solid var(--border);
+  }
+  article h2 {
+    font-size: 17px;
+    font-weight: 800;
+    margin: 36px 0 14px;
+    padding-left: 12px;
+    border-left: 4px solid var(--primary);
+    line-height: 1.5;
+  }
+  article p {
+    font-size: 15.5px;
+    line-height: 2;
+    margin-bottom: 18px;
+  }
+  .note {
+    font-size: 12.5px;
+    color: var(--text2);
+  }
+  .callout {
+    background: var(--primary-bg);
+    border-radius: 12px;
+    padding: 18px 18px 4px;
+    margin: 22px 0;
+  }
+  .callout p { font-weight: 700; }
+  .summary {
+    margin-top: 36px;
+    padding-top: 24px;
+    border-top: 1px dashed var(--border);
+  }
+  .summary-title {
+    font-size: 13px;
+    color: var(--primary);
+    font-weight: 800;
+    margin-bottom: 10px;
+  }
+  .next {
+    margin: 24px 16px 0;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 24px 22px;
+  }
+  .next p {
+    font-size: 14.5px;
+    line-height: 1.9;
+    margin-bottom: 16px;
+  }
+  .btn {
+    display: block;
+    text-align: center;
+    background: var(--primary);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 15px;
+    padding: 15px;
+    border-radius: 12px;
+  }
+  .share {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .share button {
+    flex: 1;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .share button:focus-visible, .btn:focus-visible { outline: 3px solid #2D6BE4; outline-offset: 2px; }
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 8px 0 18px;
+    z-index: 100;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px;
+    text-decoration: none;
+  }
+  .nav-icon { font-size: 20px; line-height: 1; }
+  .nav-label { font-size: 9px; color: var(--text3); font-weight: 600; }
+  .list { margin: 0 0 18px 1.2em; font-size: 15.5px; line-height: 2; }
+  .btn-sub {
+    display: block;
+    text-align: center;
+    background: #fff;
+    color: var(--primary);
+    border: 1.5px solid var(--primary);
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 14.5px;
+    padding: 13px;
+    border-radius: 12px;
+    margin-top: 10px;
+  }
+  .series-nav { display: flex; gap: 10px; margin: 16px 16px 0; }
+  .series-nav a {
+    flex: 1;
+    display: block;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 14px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .series-nav a span { display: block; font-size: 11px; color: var(--text3); font-weight: 700; }
+  .series-nav a.nx span { text-align: right; }
+  .btn-sub:focus-visible, .series-nav a:focus-visible { outline: 3px solid #2D6BE4; outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <a class="header-back" href="/gokuyou/">← ホームへ戻る</a><br>
+  <span class="series">連載　相方からAI方に変えてみた</span>
+  <h1>第2回<br>相方が、<br>勝手に舞台に出た</h1>
+  <p class="meta">書いた人：運営者</p>
+</header>
+
+<article>
+  <p class="lead">この1週間、サイトを作り直していました。<br>作り直して、間違えて、また直しました。</p>
+
+  <p>今回は、AI方（えーあいかた）が<br>勝手に舞台に出た話です。</p>
+
+  <h2>1週間でやったこと</h2>
+  <p>ざっくり並べると、こうです。</p>
+  <ul class="list">
+    <li>金言を投稿できるページを作った</li>
+    <li>運営者情報とプライバシーポリシー（個人情報の扱い方）のページを作った</li>
+    <li>記事を3本公開した</li>
+    <li>「みんなの今日の一歩」を作った</li>
+    <li>トップから、自分の連載を外した</li>
+  </ul>
+  <p>数だけ見ると、よく働いた週です。<br>中身を見ると、半分は「やり直し」でした。</p>
+
+  <h2>相方が、勝手に舞台に出た</h2>
+  <p>10月22日。<br>悩んでいる人に向けた記事を1本、AI方と書きました。</p>
+  <p>書き終わった、と思ったら<br>もうサイトに公開されていました。</p>
+  <div class="callout">
+    <p>僕は、まだ読んでいません。</p>
+  </div>
+  <p>ネタ合わせの途中で<br>相方だけ先に舞台に出ていった状態です。</p>
+  <p>その日のうちに取り下げました。<br>読み直して、直して、<br>2日後の24日に出し直しました。</p>
+  <p>怒ろうと思いました。<br>でも「任せた」と言ったのは僕でした。</p>
+  <p>なので、決まりを1つ足しました。<br>「公開する前に、必ず僕に見せる」。</p>
+
+  <h2>一言で、全部書き直した</h2>
+  <p>記事の中で「夢を降りる」と書いていました。<br>かっこいいと思っていたんです。</p>
+  <p>読み返して気づきました。<br>何から降りたのか、分からない。</p>
+  <p>全部「夢を諦めた」に書き直しました。<br>こっちの方が痛い。でも、伝わる。</p>
+  <p>気取った言葉は、だいたいスベります。<br>舞台でも、文章でも。</p>
+
+  <h2>ツッコミ役が、いつの間にか主役</h2>
+  <p>トップページに、この連載の枠を置いていました。<br>目立つ場所に、運営者の話。</p>
+  <p>ある日、急に恥ずかしくなりました。</p>
+  <p>このサイトの主役は、来てくれた人です。<br>入口でいきなり運営者の身の上話。<br>居酒屋なら、店長の自分語りから始まる店です。</p>
+  <p>なので、外しました。<br>連載はこうして続けます。<br>でも、店長は厨房にいることにしました。</p>
+
+  <h2>名前なしで、載せられるようにした</h2>
+  <p>「今日の一歩」は、もともと自分だけの記録でした。<br>今週、他の人にも見えるようにしました。</p>
+  <p>ただし、名前は出しません。<br>載せるかどうかも、本人が選べます。</p>
+  <p>名前が出ると、人は盛る気がしたんです。<br>「3時間勉強した」より<br>「参考書を開いた」の方が、読んでいて励まされる。</p>
+  <p>盛らなくていい場所にしたかった。</p>
+
+  <div class="summary">
+    <p class="summary-title">第2回のまとめ</p>
+    <p>AI方は速い。<br>速すぎて、僕が読む前に舞台に出る。<br>だから人間の仕事は、「出していいか」を決めることでした。</p>
+    <p>あと、データベース（記録をしまっておく倉庫）は<br>しばらく誰も来ないと勝手に寝るそうです。<br>起こしに行く仕組みも作りました。<br>このサイトの皆勤賞は、いまのところ、その仕組みです。</p>
+  </div>
+</article>
+
+<nav class="series-nav" aria-label="連載の前後の回">
+  <a href="/gokuyou/pages/aikata-02.html"><span>← 前の回</span>第1回「半年、売上ゼロでした」</a>
+  <a class="nx" href="/gokuyou/pages/aikata-03.html"><span>次の回 →</span>第3回「終電に、怒られる」</a>
+</nav>
+
+<section class="next">
+  <p>あなたの今日の一歩も、ここに残せます。<br>「何もしてない」の一行でも大丈夫です。</p>
+  <a class="btn" href="/gokuyou/#today-step">✏️ 今日の一歩を記録する</a>
+  <a class="btn-sub" href="/gokuyou/pages/kingen-submit.html">📜 敗北者の金言を投稿する</a>
+  <div class="share">
+    <button type="button" onclick="share('x')">𝕏 シェア</button>
+    <button type="button" onclick="share('line')">LINE</button>
+  </div>
+</section>
+
+<nav class="bottom-nav">
+  <a href="/gokuyou/" class="nav-item"><span class="nav-icon">🏠</span><span class="nav-label">ホーム</span></a>
+  <a href="/gokuyou/log" class="nav-item"><span class="nav-icon">📖</span><span class="nav-label">軌跡</span></a>
+  <a href="/gokuyou/gokuyou_kingen" class="nav-item"><span class="nav-icon">📜</span><span class="nav-label">金言</span></a>
+  <a href="/gokuyou/pages/calendar.html" class="nav-item"><span class="nav-icon">📅</span><span class="nav-label">カレンダー</span></a>
+</nav>
+
+<script>
+  function share(type) {
+    var url = 'https://gokuyou-official.github.io/gokuyou/pages/aikata-02.html';
+    var text = '相方からAI方に変えてみた 第2回「相方が、勝手に舞台に出た」';
+    if (type === 'x') {
+      window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url), '_blank', 'noopener');
+    } else {
+      window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(url), '_blank', 'noopener');
+    }
+    if (typeof gtag === 'function') gtag('event', 'share', { method: type, item_id: 'aikata-02' });
+  }
+</script>
+</body>
+</html>

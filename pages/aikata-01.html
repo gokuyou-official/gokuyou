@@ -211,6 +211,36 @@
   }
   .nav-icon { font-size: 20px; line-height: 1; }
   .nav-label { font-size: 9px; color: var(--text3); font-weight: 600; }
+  .list { margin: 0 0 18px 1.2em; font-size: 15.5px; line-height: 2; }
+  .btn-sub {
+    display: block;
+    text-align: center;
+    background: #fff;
+    color: var(--primary);
+    border: 1.5px solid var(--primary);
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 14.5px;
+    padding: 13px;
+    border-radius: 12px;
+    margin-top: 10px;
+  }
+  .series-nav { display: flex; gap: 10px; margin: 16px 16px 0; }
+  .series-nav a {
+    flex: 1;
+    display: block;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 14px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .series-nav a span { display: block; font-size: 11px; color: var(--text3); font-weight: 700; }
+  .series-nav a.nx span { text-align: right; }
+  .btn-sub:focus-visible, .series-nav a:focus-visible { outline: 3px solid #2D6BE4; outline-offset: 2px; }
 </style>
 </head>
 <body>
@@ -261,6 +291,10 @@
     <p>AIと組めば、プログラミングができなくても作れる。<br>ただし、作るだけでは1円にもならない。<br>次回からは「届ける」側の記録です。</p>
   </div>
 </article>
+
+<nav class="series-nav" aria-label="連載の前後の回">
+  <a class="nx" href="/gokuyou/pages/aikata-02.html"><span>次の回 →</span>第2回「相方が、勝手に舞台に出た」</a>
+</nav>
 
 <section class="next">
   <p>あなたの今日の一歩も、ここに残せます。<br>一言だけでも大丈夫です。</p>

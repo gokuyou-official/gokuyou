@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>相方からAI方に変えてみた 第3回「終電に、怒られる」｜夢の軌跡を、ここに。</title>
+<!-- Google Analytics -->
+<script>
+  if (localStorage.getItem('gokuyou-admin') === '1') {
+    window['ga-disable-G-8990S70XB8'] = true;
+  }
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8990S70XB8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-8990S70XB8');
+</script>
+<!-- OGP -->
+<meta name="description" content="終電アラームの文面を15分で6回直し、金言を黒と金の画像にした1週間。AIと組んだ試行錯誤の記録、連載の第3回。">
+<meta property="og:title" content="相方からAI方に変えてみた 第3回「終電に、怒られる」">
+<meta property="og:description" content="終電アラームの一行を、15分で6回書き直した1週間の記録。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://gokuyou-official.github.io/gokuyou/pages/aikata-03.html">
+<meta property="og:image" content="https://gokuyou-official.github.io/gokuyou/images/ogp-aikata-03.png">
+<meta property="og:site_name" content="夢の軌跡を、ここに。">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@gokuyou_bot">
+<meta name="twitter:title" content="相方からAI方に変えてみた 第3回「終電に、怒られる」">
+<meta name="twitter:description" content="終電アラームの一行を、15分で6回書き直した1週間の記録。">
+<meta name="twitter:image" content="https://gokuyou-official.github.io/gokuyou/images/ogp-aikata-03.png">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #FF6B35;
+    --primary-bg: #FFF4EF;
+    --bg: #F7F8FA;
+    --card: #FFFFFF;
+    --text: #3d3d3d;
+    --text2: #666677;
+    --text3: #9999AA;
+    --border: rgba(61,61,61,0.12);
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding-bottom: 96px;
+  }
+  .page-header {
+    background: linear-gradient(135deg, #FF6B35 0%, #FFB347 100%);
+    padding: 44px 24px 36px;
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+  }
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50px; right: -50px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+  }
+  .header-back {
+    color: rgba(255,255,255,0.9);
+    text-decoration: none;
+    font-size: 13px;
+    display: inline-block;
+    margin-bottom: 22px;
+  }
+  .series {
+    font-size: 13px;
+    font-weight: 700;
+    background: rgba(255,255,255,0.2);
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  .page-header h1 {
+    font-size: 25px;
+    line-height: 1.45;
+    font-weight: 800;
+    position: relative;
+  }
+  .meta {
+    margin-top: 14px;
+    font-size: 12px;
+    opacity: 0.9;
+  }
+  article {
+    background: var(--card);
+    margin: -14px 16px 0;
+    border-radius: 18px;
+    padding: 30px 22px 34px;
+    position: relative;
+    border: 1px solid var(--border);
+  }
+  .lead {
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.9;
+    padding-bottom: 26px;
+    margin-bottom: 26px;
+    border-bottom: 1px solid var(--border);
+  }
+  article h2 {
+    font-size: 17px;
+    font-weight: 800;
+    margin: 36px 0 14px;
+    padding-left: 12px;
+    border-left: 4px solid var(--primary);
+    line-height: 1.5;
+  }
+  article p {
+    font-size: 15.5px;
+    line-height: 2;
+    margin-bottom: 18px;
+  }
+  .note {
+    font-size: 12.5px;
+    color: var(--text2);
+  }
+  .callout {
+    background: var(--primary-bg);
+    border-radius: 12px;
+    padding: 18px 18px 4px;
+    margin: 22px 0;
+  }
+  .callout p { font-weight: 700; }
+  .summary {
+    margin-top: 36px;
+    padding-top: 24px;
+    border-top: 1px dashed var(--border);
+  }
+  .summary-title {
+    font-size: 13px;
+    color: var(--primary);
+    font-weight: 800;
+    margin-bottom: 10px;
+  }
+  .next {
+    margin: 24px 16px 0;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 24px 22px;
+  }
+  .next p {
+    font-size: 14.5px;
+    line-height: 1.9;
+    margin-bottom: 16px;
+  }
+  .btn {
+    display: block;
+    text-align: center;
+    background: var(--primary);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 15px;
+    padding: 15px;
+    border-radius: 12px;
+  }
+  .share {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .share button {
+    flex: 1;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .share button:focus-visible, .btn:focus-visible { outline: 3px solid #2D6BE4; outline-offset: 2px; }
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 8px 0 18px;
+    z-index: 100;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px;
+    text-decoration: none;
+  }
+  .nav-icon { font-size: 20px; line-height: 1; }
+  .nav-label { font-size: 9px; color: var(--text3); font-weight: 600; }
+  .list { margin: 0 0 18px 1.2em; font-size: 15.5px; line-height: 2; }
+  .btn-sub {
+    display: block;
+    text-align: center;
+    background: #fff;
+    color: var(--primary);
+    border: 1.5px solid var(--primary);
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 14.5px;
+    padding: 13px;
+    border-radius: 12px;
+    margin-top: 10px;
+  }
+  .series-nav { display: flex; gap: 10px; margin: 16px 16px 0; }
+  .series-nav a {
+    flex: 1;
+    display: block;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 14px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .series-nav a span { display: block; font-size: 11px; color: var(--text3); font-weight: 700; }
+  .series-nav a.nx span { text-align: right; }
+  .btn-sub:focus-visible, .series-nav a:focus-visible { outline: 3px solid #2D6BE4; outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <a class="header-back" href="/gokuyou/">← ホームへ戻る</a><br>
+  <span class="series">連載　相方からAI方に変えてみた</span>
+  <h1>第3回<br>終電に、<br>怒られる</h1>
+  <p class="meta">書いた人：運営者</p>
+</header>
+
+<article>
+  <p class="lead">今週は、通知の文面ばかり直していました。</p>
+
+  <p>「終電まであと何分」。<br>この一行を、15分で6回書き直した日があります。</p>
+  <p>今回は、アプリに<br>ツッコミを入れてもらう話です。</p>
+
+  <h2>終電アラームを、5回鳴らすことにした</h2>
+  <p>もう1つ作っているアプリがあります。<br>飲みすぎて終電を逃す人のためのアプリです。</p>
+  <div class="callout">
+    <p>僕のためのアプリです。</p>
+  </div>
+  <p>10月29日。<br>終電アラームを、1回から5回に増やしました。<br>設定した時間、10分前、5分前、3分前、1分前。</p>
+  <p>1回だと、無視するんです。<br>「まだ大丈夫」と言って、もう1杯頼む。</p>
+  <p>5回なら、さすがに立つ。<br>たぶん。</p>
+
+  <h2>一行に、15分</h2>
+  <p>増やしたら、今度は文面が気になりました。</p>
+  <p>その日の16時33分から46分。<br>通知の文面だけで、6回直しています。</p>
+  <p>見出しに電車の絵文字をつけて。<br>5分前からは、パトランプ（赤い回転灯）に変えて。</p>
+  <p>3分前は、こうしました。<br>「諦めたらそこで試合終了です。」</p>
+  <p>夢を諦めた人の場所を作っている人間が、<br>終電にだけは諦めるなと言っている。</p>
+  <p>10分前は最初、<br>「会計もたついたらダッシュね！」でした。</p>
+  <p>翌日、「ね」を消しました。<br>「会計もたついたらダッシュ！」</p>
+  <p>1文字で、優しさが消えて<br>本気度が上がりました。</p>
+  <p>漫才のツッコミも、たぶん同じです。<br>語尾ひとつで、ウケ方が変わる。</p>
+
+  <h2>昨日の終電に、起こされる</h2>
+  <p>10月30日。<br>大事な抜けに気づきました。</p>
+  <p>「今夜」の記録が、朝になっても消えない。</p>
+  <p>つまり、前の晩の終電で<br>次の日も通知が鳴る可能性がありました。</p>
+  <div class="callout">
+    <p>昨日の終電に、今日怒られる。<br>それはもう、ただの小言です。</p>
+  </div>
+  <p>翌朝5時で記録が<br>自動で空っぽになるようにしました。</p>
+
+  <h2>倉庫番は、毎日出勤になった</h2>
+  <p>御供養の方は、裏側の話です。</p>
+  <p>記録をしまっておく倉庫（データベース）は<br>しばらく誰も来ないと、勝手に止まります。</p>
+  <p>これまでは3日に1回、<br>様子を見に行く仕組みでした。</p>
+  <p>それでは止まるのを防げませんでした。</p>
+  <p>なので10月29日、毎日に変えました。<br>しかも入口をノックするだけじゃなく、<br>中のデータを実際に読みに行く形にしました。</p>
+  <p>相方もそうでした。<br>「最近どう？」だけじゃ、何も分からない。</p>
+
+  <h2>金言を、額縁に入れた</h2>
+  <p>同じ10月29日。<br>投稿された「敗北者の金言」を<br>黒地に金の文字の画像にして、<br>保存やシェアができるようにしました。</p>
+  <p>黒と金にすると、<br>どんな一言も、えらい人の名言っぽくなります。</p>
+  <p>中身は敗北者のままなのに。</p>
+  <p>でも、それくらいの扱いでいい気がしています。</p>
+  <p>「夢を諦めた人に読んでほしい」という文章も<br>同じ黒と金の、手紙みたいな見た目に変えました。</p>
+  <p>中身は一文字も変えていません。<br>変えたのは紙だけです。</p>
+
+  <div class="summary">
+    <p class="summary-title">第3回のまとめ</p>
+    <p>アプリでも、相方でも、<br>言い方ひとつで、伝わり方が変わる。<br>そして、確認は「中まで」やらないと意味がない。</p>
+    <p>あと、終電アラームの文面を<br>15分で6回直した男が、<br>一番終電を逃しそうな顔をしています。</p>
+  </div>
+</article>
+
+<nav class="series-nav" aria-label="連載の前後の回">
+  <a href="/gokuyou/pages/aikata-02.html"><span>← 前の回</span>第2回「相方が、勝手に舞台に出た」</a>
+</nav>
+
+<section class="next">
+  <p>あなたの今日の一歩も、ここに残せます。<br>「今日は通知の文面を直しただけ」でも、立派な一歩です。</p>
+  <a class="btn" href="/gokuyou/#today-step">✏️ 今日の一歩を記録する</a>
+  <a class="btn-sub" href="/gokuyou/pages/kingen-submit.html">📜 敗北者の金言を投稿する</a>
+  <div class="share">
+    <button type="button" onclick="share('x')">𝕏 シェア</button>
+    <button type="button" onclick="share('line')">LINE</button>
+  </div>
+</section>
+
+<nav class="bottom-nav">
+  <a href="/gokuyou/" class="nav-item"><span class="nav-icon">🏠</span><span class="nav-label">ホーム</span></a>
+  <a href="/gokuyou/log" class="nav-item"><span class="nav-icon">📖</span><span class="nav-label">軌跡</span></a>
+  <a href="/gokuyou/gokuyou_kingen" class="nav-item"><span class="nav-icon">📜</span><span class="nav-label">金言</span></a>
+  <a href="/gokuyou/pages/calendar.html" class="nav-item"><span class="nav-icon">📅</span><span class="nav-label">カレンダー</span></a>
+</nav>
+
+<script>
+  function share(type) {
+    var url = 'https://gokuyou-official.github.io/gokuyou/pages/aikata-03.html';
+    var text = '相方からAI方に変えてみた 第3回「終電に、怒られる」';
+    if (type === 'x') {
+      window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url), '_blank', 'noopener');
+    } else {
+      window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(url), '_blank', 'noopener');
+    }
+    if (typeof gtag === 'function') gtag('event', 'share', { method: type, item_id: 'aikata-03' });
+  }
+</script>
+</body>
+</html>
