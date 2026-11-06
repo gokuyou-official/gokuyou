@@ -1,0 +1,49 @@
+name: User Stats
+
+# 御供養とやらかしの利用状況を数えて、結果を注記に残す（読み取りのみ・無料）。
+# 使う鍵は、もともとサイトで公開されている閲覧用の鍵だけ（秘密の鍵ではない）。
+
+on:
+  schedule:
+    - cron: '7 11 * * 1'   # 毎週月曜 JST 20:07（週次報告の前）
+  workflow_dispatch:
+
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Count
+        shell: python
+        run: |
+          import json, urllib.request, collections, datetime as dt
+          JST = dt.timezone(dt.timedelta(hours=9))
+          now = dt.datetime.now(dt.timezone.utc)
+          since = (now - dt.timedelta(days=28)).strftime('%Y-%m-%dT%H:%M:%SZ')
+          DBS = {
+            'gokuyou': ('fnxzkkzcveujonysoxtp.supabase.co', 'sb_publishable_DPH-TyxDCj6ynUIyoxdFgg_iNwHsBO8'),
+            'yarakashi': ('vktzbishexpahdmvvwcb.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrdHpiaXNoZXhwYWhkbXZ2d2NiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMjkxODksImV4cCI6MjA5MzgwNTE4OX0.S8gWP0oEd63BYLLqPvmdV0OT9yUpH-locooZsQcVNqs'),
+          }
+          def get(db, path):
+            host, key = DBS[db]
+            req = urllib.request.Request(f'https://{host}/rest/v1/{path}',
+              headers={'apikey': key, 'Authorization': f'Bearer {key}', 'Range': '0-9999'})
+            try:
+              with urllib.request.urlopen(req, timeout=30) as r:
+                return json.load(r)
+            except Exception as e:
+              return f'ERR {e}'
+          def weekly(rows, col):
+            if isinstance(rows, str): return rows
+            c = collections.Counter()
+            for x in rows:
+              t = dt.datetime.fromisoformat(x[col].replace('Z', '+00:00'))
+              c[(now - t).days // 7] += 1
+            return ' / '.join(f'{c.get(w,0)}' for w in (3,2,1,0)) + '（3週前→今週）'
+          out = {
+            'やらかし 閲覧数(PV)': weekly(get('yarakashi', f'page_views?select=visited_at&visited_at=gte.{since}'), 'visited_at'),
+            '御供養 今日の一歩(公開)': weekly(get('gokuyou', f'public_steps?select=created_at&created_at=gte.{since}'), 'created_at'),
+          }
+          ev = get('gokuyou', 'events?select=id')
+          out['御供養 カレンダー予定(累計)'] = ev if isinstance(ev, str) else len(ev)
+          for k, v in out.items():
+            print(f'::notice::{k}: {v}')
