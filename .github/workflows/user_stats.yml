@@ -51,3 +51,58 @@ jobs:
           out['御供養 カレンダー予定(累計)'] = ev if isinstance(ev, str) else len(ev)
           for k, v in out.items():
             print(f'::notice::{k}: {v}')
+
+      # ---- Google アナリティクス（人数）----
+      # GA_SA_KEY（サービスアカウントの鍵）が登録されていれば、週ごとの人数を数える。
+      # 未登録なら「未設定」と注記するだけで、失敗にはしない。
+      - name: Install GA client
+        run: pip install -q google-auth requests
+      - name: GA report
+        env:
+          GA_SA_KEY: ${{ secrets.GA_SA_KEY }}
+          GA_PROPERTY_ID: ${{ vars.GA_PROPERTY_ID }}
+        shell: python
+        run: |
+          import os, json
+          raw = os.environ.get('GA_SA_KEY', '')
+          if not raw:
+            print('::notice::GA: 未設定（GA_SA_KEY が登録されていません）'); raise SystemExit(0)
+          from google.oauth2 import service_account
+          from google.auth.transport.requests import AuthorizedSession
+          creds = service_account.Credentials.from_service_account_info(
+            json.loads(raw), scopes=['https://www.googleapis.com/auth/analytics.readonly'])
+          s = AuthorizedSession(creds)
+          pid = os.environ.get('GA_PROPERTY_ID', '').strip()
+          props = []
+          if pid:
+            props = [(pid, '御供養')]
+          else:
+            r = s.get('https://analyticsadmin.googleapis.com/v1beta/accountSummaries')
+            if r.status_code != 200:
+              print(f'::warning::GA: プロパティ一覧を取得できません HTTP {r.status_code} {r.text[:200]}'); raise SystemExit(0)
+            for a in r.json().get('accountSummaries', []):
+              for p in a.get('propertySummaries', []):
+                props.append((p['property'].split('/')[-1], p.get('displayName', '')))
+            if not props:
+              print('::warning::GA: 閲覧できるプロパティがありません（GAの「アクセス管理」にサービスアカウントを追加してください）'); raise SystemExit(0)
+          for pid, label in props:
+            url = f'https://analyticsdata.googleapis.com/v1beta/properties/{pid}:runReport'
+            weeks = []
+            for w in (3, 2, 1, 0):
+              body = {'dateRanges': [{'startDate': f'{7*w+7}daysAgo', 'endDate': f'{7*w+1}daysAgo'}],
+                      'metrics': [{'name': 'activeUsers'}, {'name': 'newUsers'}, {'name': 'screenPageViews'}]}
+              r = s.post(url, json=body)
+              if r.status_code != 200:
+                print(f'::warning::GA {label}: 取得失敗 HTTP {r.status_code} {r.text[:200]}'); break
+              rows = r.json().get('rows', [])
+              v = [x['value'] for x in rows[0]['metricValues']] if rows else ['0', '0', '0']
+              weeks.append('/'.join(v))
+            else:
+              print(f'::notice::GA {label}({pid}) 人数/新規/閲覧 週ごと(3週前→先週): ' + ' | '.join(weeks))
+              body = {'dateRanges': [{'startDate': '7daysAgo', 'endDate': 'yesterday'}],
+                      'dimensions': [{'name': 'sessionSource'}], 'metrics': [{'name': 'activeUsers'}],
+                      'orderBys': [{'metric': {'metricName': 'activeUsers'}, 'desc': True}], 'limit': 5}
+              r = s.post(url, json=body)
+              if r.status_code == 200:
+                src = ', '.join(f"{x['dimensionValues'][0]['value']}={x['metricValues'][0]['value']}" for x in r.json().get('rows', []))
+                print(f'::notice::GA {label} 先週の流入元: {src or "なし"}')
