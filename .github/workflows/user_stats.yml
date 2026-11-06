@@ -43,6 +43,10 @@ jobs:
             'やらかし 閲覧数(PV)': weekly(get('yarakashi', f'page_views?select=visited_at&visited_at=gte.{since}'), 'visited_at'),
             '御供養 今日の一歩(公開)': weekly(get('gokuyou', f'public_steps?select=created_at&created_at=gte.{since}'), 'created_at'),
           }
+          for name, db, path, col in [('やらかし 閲覧数', 'yarakashi', 'page_views', 'visited_at'),
+                                      ('御供養 今日の一歩', 'gokuyou', 'public_steps', 'created_at')]:
+            rows = get(db, f'{path}?select={col}&order={col}.desc')
+            out[f'{name}(累計・最新日)'] = rows if isinstance(rows, str) else f'{len(rows)}件・{rows[0][col][:10] if rows else "なし"}'
           ev = get('gokuyou', 'events?select=id')
           out['御供養 カレンダー予定(累計)'] = ev if isinstance(ev, str) else len(ev)
           for k, v in out.items():
