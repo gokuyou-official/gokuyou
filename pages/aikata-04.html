@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>相方からAI方に変えてみた 第4回「客席を、数えはじめた」｜夢の軌跡を、ここに。</title>
+<!-- Google Analytics -->
+<script>
+  if (localStorage.getItem('gokuyou-admin') === '1') {
+    window['ga-disable-G-8990S70XB8'] = true;
+  }
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8990S70XB8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-8990S70XB8');
+</script>
+<!-- OGP -->
+<meta name="description" content="サイトに来た人を数える係を作り、同じ説明を2回していたページを直した1週間。AIと組んだ試行錯誤の記録、連載の第4回。">
+<meta property="og:title" content="相方からAI方に変えてみた 第4回「客席を、数えはじめた」">
+<meta property="og:description" content="来た人を数える係を作った。最初の報告は「未設定」だった。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://gokuyou-official.github.io/gokuyou/pages/aikata-04.html">
+<meta property="og:image" content="https://gokuyou-official.github.io/gokuyou/images/ogp-aikata-04.png">
+<meta property="og:site_name" content="夢の軌跡を、ここに。">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@gokuyou_bot">
+<meta name="twitter:title" content="相方からAI方に変えてみた 第4回「客席を、数えはじめた」">
+<meta name="twitter:description" content="来た人を数える係を作った。最初の報告は「未設定」だった。">
+<meta name="twitter:image" content="https://gokuyou-official.github.io/gokuyou/images/ogp-aikata-04.png">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #FF6B35;
+    --primary-bg: #FFF4EF;
+    --bg: #F7F8FA;
+    --card: #FFFFFF;
+    --text: #3d3d3d;
+    --text2: #666677;
+    --text3: #9999AA;
+    --border: rgba(61,61,61,0.12);
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding-bottom: 96px;
+  }
+  .page-header {
+    background: linear-gradient(135deg, #FF6B35 0%, #FFB347 100%);
+    padding: 44px 24px 36px;
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+  }
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50px; right: -50px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+  }
+  .header-back {
+    color: rgba(255,255,255,0.9);
+    text-decoration: none;
+    font-size: 13px;
+    display: inline-block;
+    margin-bottom: 22px;
+  }
+  .series {
+    font-size: 13px;
+    font-weight: 700;
+    background: rgba(255,255,255,0.2);
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  .page-header h1 {
+    font-size: 25px;
+    line-height: 1.45;
+    font-weight: 800;
+    position: relative;
+  }
+  .meta {
+    margin-top: 14px;
+    font-size: 12px;
+    opacity: 0.9;
+  }
+  article {
+    background: var(--card);
+    margin: -14px 16px 0;
+    border-radius: 18px;
+    padding: 30px 22px 34px;
+    position: relative;
+    border: 1px solid var(--border);
+  }
+  .lead {
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.9;
+    padding-bottom: 26px;
+    margin-bottom: 26px;
+    border-bottom: 1px solid var(--border);
+  }
+  article h2 {
+    font-size: 17px;
+    font-weight: 800;
+    margin: 36px 0 14px;
+    padding-left: 12px;
+    border-left: 4px solid var(--primary);
+    line-height: 1.5;
+  }
+  article p {
+    font-size: 15.5px;
+    line-height: 2;
+    margin-bottom: 18px;
+  }
+  .note {
+    font-size: 12.5px;
+    color: var(--text2);
+  }
+  .callout {
+    background: var(--primary-bg);
+    border-radius: 12px;
+    padding: 18px 18px 4px;
+    margin: 22px 0;
+  }
+  .callout p { font-weight: 700; }
+  .summary {
+    margin-top: 36px;
+    padding-top: 24px;
+    border-top: 1px dashed var(--border);
+  }
+  .summary-title {
+    font-size: 13px;
+    color: var(--primary);
+    font-weight: 800;
+    margin-bottom: 10px;
+  }
+  .next {
+    margin: 24px 16px 0;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 24px 22px;
+  }
+  .next p {
+    font-size: 14.5px;
+    line-height: 1.9;
+    margin-bottom: 16px;
+  }
+  .btn {
+    display: block;
+    text-align: center;
+    background: var(--primary);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 15px;
+    padding: 15px;
+    border-radius: 12px;
+  }
+  .share {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .share button {
+    flex: 1;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .share button:focus-visible, .btn:focus-visible { outline: 3px solid #2D6BE4; outline-offset: 2px; }
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 8px 0 18px;
+    z-index: 100;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px;
+    text-decoration: none;
+  }
+  .nav-icon { font-size: 20px; line-height: 1; }
+  .nav-label { font-size: 9px; color: var(--text3); font-weight: 600; }
+  .list { margin: 0 0 18px 1.2em; font-size: 15.5px; line-height: 2; }
+  .btn-sub {
+    display: block;
+    text-align: center;
+    background: #fff;
+    color: var(--primary);
+    border: 1.5px solid var(--primary);
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 14.5px;
+    padding: 13px;
+    border-radius: 12px;
+    margin-top: 10px;
+  }
+  .series-nav { display: flex; gap: 10px; margin: 16px 16px 0; }
+  .series-nav a {
+    flex: 1;
+    display: block;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 14px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .series-nav a span { display: block; font-size: 11px; color: var(--text3); font-weight: 700; }
+  .series-nav a.nx span { text-align: right; }
+  .btn-sub:focus-visible, .series-nav a:focus-visible { outline: 3px solid #2D6BE4; outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <a class="header-back" href="/gokuyou/">← ホームへ戻る</a><br>
+  <span class="series">連載　相方からAI方に変えてみた</span>
+  <h1>第4回<br>客席を、<br>数えはじめた</h1>
+  <p class="meta">書いた人：運営者</p>
+</header>
+
+<article>
+  <p class="lead">今週は、数える仕組みを作りました。</p>
+
+  <p>サイトに、何人来ているのか。<br>今日の一歩は、何件書かれたのか。</p>
+  <p>作るのは得意になってきました。<br>でも、誰が見ているかは<br>ちゃんと数えたことがなかった。</p>
+  <p>今回は、客席を数える話です。</p>
+
+  <h2>同じ自己紹介を、2回していた</h2>
+  <p>11月1日。<br>「夢を諦めた人に読んでほしい」という<br>文章のページを直しました。</p>
+  <p>ページには、検索やSNS向けの<br>説明書き（タグ）が入っています。<br>「このページはこういう内容です」という札です。</p>
+  <p>その札が、まるごと2回書いてありました。</p>
+  <div class="callout">
+    <p>名刺を2枚、同時に出していた。</p>
+  </div>
+  <p>1枚にしました。<br>受け取る側も、たぶん困っていたと思います。</p>
+
+  <h2>読み終わった人の、行き先</h2>
+  <p>同じ日、もう1つ直しました。</p>
+  <p>あの文章の最後には、<br>「敗北者の金言を読む」の<br>ボタンしかありませんでした。</p>
+  <p>読んで、少し何か思った人に<br>「次は他人の言葉をどうぞ」と言っている。</p>
+  <p>なので、こう書き足しました。</p>
+  <div class="callout">
+    <p>読み終わったら、一行だけ残していきませんか。<br>「今日は何もしてない」でも大丈夫です。</p>
+  </div>
+  <p>その下に、今日の一歩の記録と、<br>自分の金言を投稿するボタンを置きました。</p>
+  <p>ライブでいうと、終演後に<br>お客さんがしゃべれる場所を作った感じです。</p>
+
+  <h2>連載が、2本同時に出た</h2>
+  <p>11月6日。<br>この連載の第2回と第3回を、<br>同じ日にまとめて公開しました。</p>
+  <p>第1回が10月の頭です。<br>そこから、1か月。</p>
+  <p>連載と名乗っていいのか、<br>少し迷う間隔です。</p>
+  <p>各回の最後に、前の回へのリンクと<br>金言投稿への入り口も付けました。</p>
+
+  <h2>客席を数える係を、雇った</h2>
+  <p>同じ11月6日。<br>本題の、数える仕組みです。</p>
+  <p>毎週月曜の夜8時すぎに、<br>自動で数えてくれる係を作りました。</p>
+  <p>数えるのは、このあたりです。</p>
+  <ul class="list">
+    <li>公開された今日の一歩が、週に何件あるか</li>
+    <li>カレンダーの予定が、全部で何件あるか</li>
+    <li>終電アプリが、週に何回開かれたか</li>
+  </ul>
+  <p>4週間分を並べて、<br>増えたか減ったかが分かる形です。</p>
+  <p>見るだけで、何も書き換えません。<br>お金もかかりません。</p>
+  <p>芸人は、出番の前に<br>袖から客席をのぞきます。<br>何人いるかで、出方を変えるためです。</p>
+  <p>サイトにも、袖ができました。</p>
+
+  <h2>一番正直な報告</h2>
+  <p>その日のうちに、もう1つ足しました。</p>
+  <p>Googleの分析ツール（アクセス解析）から<br>週ごとの人数や、<br>どこから来たかも数える係です。</p>
+  <p>ただ、この係が働くには<br>専用の鍵が要ります。</p>
+  <p>鍵がない間は、<br>こう報告するだけにしました。</p>
+  <p>その日、試しに動かしてみました。<br>最初の報告です。</p>
+  <div class="callout">
+    <p>「未設定」</p>
+  </div>
+  <p>失敗にはしない。<br>ただ、未設定と言う。</p>
+  <p>何も分からないときに<br>分かったふりをしない。<br>今週一番えらいのは、この係かもしれません。</p>
+
+  <div class="summary">
+    <p class="summary-title">第4回のまとめ</p>
+    <p>作るだけじゃなく、数える。<br>名刺は1枚でいい。<br>分からないときは「未設定」と言う。</p>
+    <p>ちなみに終電アプリは今週、<br>一度も更新していません。<br>ちゃんと終電で帰れていた、<br>ということにしておきます。</p>
+  </div>
+</article>
+
+<nav class="series-nav" aria-label="連載の前後の回">
+  <a href="/gokuyou/pages/aikata-03.html"><span>← 前の回</span>第3回「終電に、怒られる」</a>
+</nav>
+
+<section class="next">
+  <p>あなたの今日の一歩も、ここに残せます。<br>「今日は何もしてない」の一行でも大丈夫です。</p>
+  <a class="btn" href="/gokuyou/#today-step">✏️ 今日の一歩を記録する</a>
+  <a class="btn-sub" href="/gokuyou/pages/kingen-submit.html">📜 敗北者の金言を投稿する</a>
+  <div class="share">
+    <button type="button" onclick="share('x')">𝕏 シェア</button>
+    <button type="button" onclick="share('line')">LINE</button>
+  </div>
+</section>
+
+<nav class="bottom-nav">
+  <a href="/gokuyou/" class="nav-item"><span class="nav-icon">🏠</span><span class="nav-label">ホーム</span></a>
+  <a href="/gokuyou/log" class="nav-item"><span class="nav-icon">📖</span><span class="nav-label">軌跡</span></a>
+  <a href="/gokuyou/gokuyou_kingen" class="nav-item"><span class="nav-icon">📜</span><span class="nav-label">金言</span></a>
+  <a href="/gokuyou/pages/calendar.html" class="nav-item"><span class="nav-icon">📅</span><span class="nav-label">カレンダー</span></a>
+</nav>
+
+<script>
+  function share(type) {
+    var url = 'https://gokuyou-official.github.io/gokuyou/pages/aikata-04.html';
+    var text = '相方からAI方に変えてみた 第4回「客席を、数えはじめた」';
+    if (type === 'x') {
+      window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url), '_blank', 'noopener');
+    } else {
+      window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(url), '_blank', 'noopener');
+    }
+    if (typeof gtag === 'function') gtag('event', 'share', { method: type, item_id: 'aikata-04' });
+  }
+</script>
+</body>
+</html>
