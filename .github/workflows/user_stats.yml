@@ -5,7 +5,8 @@ name: User Stats
 
 on:
   schedule:
-    - cron: '7 11 * * 1'   # 毎週月曜 JST 20:07（週次報告の前）
+    - cron: '7 22 * * *'   # 毎日 JST 7:07（朝の改善の前）
+    - cron: '7 10 * * *'   # 毎日 JST 19:07（夜の改善の前）
   workflow_dispatch:
 
 jobs:
@@ -51,6 +52,21 @@ jobs:
           out['御供養 カレンダー予定(累計)'] = ev if isinstance(ev, str) else len(ev)
           for k, v in out.items():
             print(f'::notice::{k}: {v}')
+
+      - name: Site stats (views)
+        shell: python
+        run: |
+          import json, urllib.request
+          try:
+            with urllib.request.urlopen('https://creative-kataifi-48adb2.netlify.app/.netlify/functions/stats', timeout=30) as r:
+              d = json.load(r)
+            print(f"::notice::御供養 閲覧数 週ごと(3週前→今週): {' / '.join(map(str, d['gokuyou_views']))}（今日 {d['gokuyou_today']}）")
+            print(f"::notice::やらかし 閲覧数 週ごと(3週前→今週): {' / '.join(map(str, d['yarakashi_views']))}（今日 {d['yarakashi_today']}）")
+            top = sorted(d['gokuyou_pages_7d'].items(), key=lambda x: -x[1])[:5]
+            print('::notice::御供養 直近7日のよく見られたページ: ' + (', '.join(f'{p} {c}' for p, c in top) or 'なし'))
+            print(f"::notice::やらかし 直近7日 記録 {d['yarakashi_records_7d']}件 / 使った人 {d['yarakashi_tonight_active_7d']}人 / 通知登録 {d['yarakashi_push_subscribers']}人")
+          except Exception as e:
+            print(f'::notice::閲覧数の集計に失敗: {e}')
 
       # ---- Google アナリティクス（人数）----
       # GA_SA_KEY（サービスアカウントの鍵）が登録されていれば、週ごとの人数を数える。
