@@ -64,6 +64,7 @@ jobs:
             print(f"::notice::やらかし 閲覧数 週ごと(3週前→今週): {' / '.join(map(str, d['yarakashi_views']))}（今日 {d['yarakashi_today']}）")
             top = sorted(d['gokuyou_pages_7d'].items(), key=lambda x: -x[1])[:5]
             print('::notice::御供養 直近7日のよく見られたページ: ' + (', '.join(f'{p} {c}' for p, c in top) or 'なし'))
+            print(f"::notice::自動確認・ロボットとして除外した閲覧(28日): {d.get('excluded_bots')}")
             rec = d.get('yarakashi_recent') or []
             print('::notice::やらかし 直近の閲覧(日時/端末/流入元): ' + ' | '.join(f"{r['at']} {r['device']} {r['from']}" for r in rec[:25]))
             print(f"::notice::やらかし 直近7日 記録 {d['yarakashi_records_7d']}件 / 使った人 {d['yarakashi_tonight_active_7d']}人 / 通知登録 {d['yarakashi_push_subscribers']}人")
