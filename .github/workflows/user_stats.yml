@@ -56,7 +56,7 @@ jobs:
       - name: Site stats (views)
         shell: python
         run: |
-          import json, urllib.request
+          import json, urllib.request, urllib.error
           try:
             with urllib.request.urlopen('https://creative-kataifi-48adb2.netlify.app/.netlify/functions/stats', timeout=30) as r:
               d = json.load(r)
@@ -65,6 +65,8 @@ jobs:
             top = sorted(d['gokuyou_pages_7d'].items(), key=lambda x: -x[1])[:5]
             print('::notice::御供養 直近7日のよく見られたページ: ' + (', '.join(f'{p} {c}' for p, c in top) or 'なし'))
             print(f"::notice::やらかし 直近7日 記録 {d['yarakashi_records_7d']}件 / 使った人 {d['yarakashi_tonight_active_7d']}人 / 通知登録 {d['yarakashi_push_subscribers']}人")
+          except urllib.error.HTTPError as e:
+            print(f'::notice::閲覧数の集計に失敗: {e} {e.read().decode()[:300]}')
           except Exception as e:
             print(f'::notice::閲覧数の集計に失敗: {e}')
 
