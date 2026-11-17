@@ -73,6 +73,30 @@ jobs:
           except Exception as e:
             print(f'::notice::閲覧数の集計に失敗: {e}')
 
+      # 御供養の閲覧数カウンター（hit）が動ける設定になっているかの点検と、
+      # やらかしの閲覧が「人か自動巡回か」を見分けるための判別情報（タイムゾーン・言語・画面）を出す。
+      - name: Counter check and view details
+        shell: python
+        run: |
+          import json, urllib.request
+          base = 'https://creative-kataifi-48adb2.netlify.app/.netlify/functions/'
+          try:
+            with urllib.request.urlopen(base + 'hit?check=1', timeout=30) as r:
+              c = json.load(r)
+            print(f"::notice::御供養カウンター点検: env={str(c.get('env')).lower()}")
+          except Exception as e:
+            print(f'::notice::御供養カウンター点検: 取得失敗 {e}')
+          try:
+            with urllib.request.urlopen(base + 'stats', timeout=30) as r:
+              d = json.load(r)
+            w = lambda k: ' / '.join(map(str, d.get(k) or []))
+            print(f"::notice::やらかし 閲覧 内訳 週ごと(3週前→今週): 日本時間 {w('yarakashi_views_tokyo')}（今日 {d.get('yarakashi_today_tokyo')}） / 日本以外 {w('yarakashi_views_other_tz')}（今日 {d.get('yarakashi_today_other_tz')}） / 判別情報なし(旧) {w('yarakashi_views_no_info')}（今日 {d.get('yarakashi_today_no_info')}）")
+            rec = d.get('yarakashi_recent') or []
+            print('::notice::やらかし 直近の閲覧 詳細(日時秒/端末/流入元/tz/lang/scr/vis/hc): ' + ' | '.join(
+              f"{r.get('at_sec', r['at'])} {r['device']} {r['from']} tz={r.get('tz','')} lang={r.get('lang','')} scr={r.get('scr','')} vis={r.get('vis','')} hc={r.get('hc','')}" for r in rec[:25]))
+          except Exception as e:
+            print(f'::notice::閲覧の判別情報の取得に失敗: {e}')
+
       # ---- Google アナリティクス（人数）----
       # GA_SA_KEY（サービスアカウントの鍵）が登録されていれば、週ごとの人数を数える。
       # 未登録なら「未設定」と注記するだけで、失敗にはしない。
