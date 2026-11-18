@@ -1,0 +1,22 @@
+name: Deploy Check (read only)
+
+# やらかし（Netlify）に、最新の変更が実際に反映されているかを確かめる（読み取りのみ）。
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check
+        run: |
+          U=https://creative-kataifi-48adb2.netlify.app
+          curl -sS -o page.html -w "index status=%{http_code}\n" "$U/?nocache=$RANDOM" | tee s.txt
+          echo "::notice::やらかし トップ $(cat s.txt)"
+          for m in "yk_owner:運営者除外(11/16)" "ykLogView:判別情報(11/18)" "rel=\"canonical\":正式URL(11/17)" "application/ld+json:構造化データ(11/17)"; do
+            k="${m%%:*}"; n="${m#*:}"
+            if grep -q "$k" page.html; then echo "::notice::反映済み $n"; else echo "::notice::未反映 $n"; fi
+          done
+          curl -sS -o /dev/null -w "::notice::試作ページ yarakashi-app3.html status=%{http_code}\n" "$U/yarakashi-app3.html"
+          curl -sS -w "\n" "$U/.netlify/functions/hit?check=1" | head -c 200 | sed 's/^/::notice::hit点検 /'
+          curl -sS -I "$U/" | grep -iE "^(age|date|etag|x-nf-request-id|cache-status)" | sed 's/^/::notice::/'
