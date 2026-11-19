@@ -1,0 +1,27 @@
+name: IndexNow (search engine notify)
+
+# 検索エンジン（Bing など IndexNow 対応先）に、御供養のページがあることを知らせる。
+# アカウント登録は不要・無料。送るのは sitemap.xml に載っている公開ページのURLだけ。
+on:
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Notify
+        shell: python
+        run: |
+          import json, re, urllib.request
+          key = '6e9a131fe8aea0d6ee374aa63c00f5e7'
+          urls = re.findall(r'<loc>([^<]+)</loc>', open('sitemap.xml', encoding='utf-8').read())
+          body = json.dumps({'host': 'gokuyou-official.github.io', 'key': key,
+            'keyLocation': f'https://gokuyou-official.github.io/gokuyou/{key}.txt', 'urlList': urls}).encode()
+          req = urllib.request.Request('https://api.indexnow.org/indexnow', data=body,
+            headers={'Content-Type': 'application/json; charset=utf-8'})
+          try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+              print(f'::notice::IndexNow 送信 {len(urls)}件 → 応答 {r.status}')
+          except urllib.error.HTTPError as e:
+            print(f'::notice::IndexNow 送信 {len(urls)}件 → 応答 {e.code} {e.read().decode()[:200]}')
