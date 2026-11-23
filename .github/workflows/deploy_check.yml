@@ -3,6 +3,11 @@ name: Deploy Check (read only)
 # やらかし（Netlify）に、最新の変更が実際に反映されているかを確かめる（読み取りのみ）。
 on:
   workflow_dispatch:
+    inputs:
+      counter_test:
+        description: '御供養カウンターの動作テスト（テスト用の閲覧を1件記録する）'
+        type: boolean
+        default: false
 
 jobs:
   check:
@@ -20,3 +25,14 @@ jobs:
           curl -sS -o /dev/null -w "::notice::試作ページ yarakashi-app3.html status=%{http_code}\n" "$U/yarakashi-app3.html"
           curl -sS -w "\n" "$U/.netlify/functions/hit?check=1" | head -c 200 | sed 's/^/::notice::hit点検 /'
           curl -sS -I "$U/" | grep -iE "^(age|date|etag|x-nf-request-id|cache-status)" | sed 's/^/::notice::/'
+      - name: Counter test
+        if: ${{ inputs.counter_test }}
+        run: |
+          U=https://creative-kataifi-48adb2.netlify.app
+          curl -sS -o /dev/null -w "::notice::カウンターテスト送信 status=%{http_code}\n" -A "Mozilla/5.0 (counter-selftest by Claude)" "$U/.netlify/functions/hit?p=%2Fgokuyou%2F__counter_selftest"
+          sleep 5
+          python3 - <<'PY'
+          import json, urllib.request
+          d = json.load(urllib.request.urlopen('https://creative-kataifi-48adb2.netlify.app/.netlify/functions/stats', timeout=30))
+          print(f"::notice::カウンターテスト後 御供養 今日 {d['gokuyou_today']} / 直近7日のページ {json.dumps(d.get('gokuyou_pages_7d'), ensure_ascii=False)}")
+          PY
